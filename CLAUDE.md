@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Pocket Heist — "Tiny missions. Big office mischief." Starter project for the Claude Code Masterclass.
+Pocket Heist — "Small heists. Big chaos." Starter project for the Claude Code Masterclass.
 
 | | |
 |---|---|

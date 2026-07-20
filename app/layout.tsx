@@ -3,7 +3,7 @@ import "@/app/globals.css"
 
 export const metadata: Metadata = {
   title: "Pocket Heist",
-  description: "Tiny missions. Big office mischief.",
+  description: "Small heists. Big chaos.",
 }
 
 export default function RootLayout({
