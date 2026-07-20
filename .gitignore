@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# hook-generated logs
+tool-use-log.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
