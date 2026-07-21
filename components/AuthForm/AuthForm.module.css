@@ -1,0 +1,57 @@
+@reference "../../app/globals.css";
+
+.form {
+  @apply mx-auto flex w-full max-w-sm flex-col gap-4;
+}
+
+.title {
+  @apply text-center text-xl font-bold;
+}
+
+.field {
+  @apply flex flex-col gap-1;
+}
+
+.label {
+  @apply text-sm font-medium text-heading;
+}
+
+.control {
+  @apply relative;
+}
+
+.input {
+  @apply w-full rounded-md bg-lighter px-3 py-2 text-heading;
+}
+
+.input:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.inputAdornment {
+  @apply pr-10;
+}
+
+.toggle {
+  @apply absolute inset-y-0 right-2 flex items-center text-body;
+}
+
+.toggle:hover {
+  @apply text-heading;
+}
+
+.error {
+  @apply text-sm text-error;
+}
+
+.switch {
+  @apply text-center text-sm;
+}
+
+.switchButton {
+  @apply font-semibold text-primary;
+}
+
+.switchButton:hover {
+  @apply underline;
+}
