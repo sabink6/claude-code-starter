@@ -35,8 +35,8 @@ Route groups split public vs. authenticated areas, each with its own root layout
 app/
 ├── (public)/          # no nav; layout is a bare wrapper
 │   ├── page.tsx        # splash page — should redirect based on auth state
-│   ├── login/           # renders <AuthForm initialMode="login" />
-│   ├── signup/          # renders <AuthForm initialMode="signup" />
+│   ├── login/
+│   ├── signup/
 │   └── preview/         # scratch page for building/inspecting new UI in isolation
 └── (dashboard)/        # layout wraps children with the shared Navbar
     └── heists/
@@ -46,7 +46,6 @@ app/
 ```
 
 - `app/(public)/page.tsx` is meant to redirect: logged in → `/heists`, logged out → `/login`. **Not implemented yet** — it currently renders static content only.
-- `/login` and `/signup` share one `AuthForm` client component (`components/AuthForm/`). Switching between the two modes is a client-side state flip, not a route navigation, and submission currently only `console.log`s the entered data — there's no real auth backend yet.
 
 ## Conventions
 
@@ -55,9 +54,7 @@ app/
   - `<Name>.module.css` — co-located CSS Module
   - `index.ts` — barrel re-export of the default
 
-  Import via `@/components/<Name>`, not by reaching into the folder directly. A component folder may also contain internal-only subcomponents it doesn't export (e.g. `components/AuthForm/Field.tsx`) — these skip the `index.ts` barrel since they aren't meant to be imported from outside the folder.
-
-- **Client components**: the codebase defaults to Server Components; add `"use client"` only where local state/interactivity is actually needed (see `components/AuthForm/`).
+  Import via `@/components/<Name>`, not by reaching into the folder directly.
 
 - **Path alias**: `@/*` → repo root (`tsconfig.json`), e.g. `@/app/globals.css`, `@/components/Navbar`.
 
@@ -70,17 +67,6 @@ app/
   - Runs in `jsdom` with `@testing-library/react`.
   - Globals (`describe`/`it`/`expect`) are enabled — no explicit imports needed.
   - `jest-dom` matchers are loaded globally via `vitest.setup.ts`.
-
-## CI and branch protection
-
-- `main` is protected: direct pushes are rejected — all changes land via a pull request, and the `ci` status check (`.github/workflows/ci.yml`: install, lint, test, build) must pass before merging. Always work on a feature branch.
-- See `_docs/github-setup.md` for the full GitHub configuration (branch ruleset, Dependabot, CodeQL, secret scanning).
-
-## Planning workflow
-
-- `_specs/` holds feature specs (one markdown file per feature, following `_specs/template.md`), created via the `/spec` command, which also creates the feature's branch.
-- `_plans/` holds saved implementation plans for specs not yet built.
-- `.claude/commands/` has repo-specific slash commands: `/spec` (spec + branch scaffolding), `/component` (TDD component creation, updating the preview page), `/commit-message` (drafts a commit message from staged changes — always confirm with the user before committing).
 
 ## Additional Coding Preferences
 
