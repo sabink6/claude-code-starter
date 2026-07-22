@@ -46,7 +46,7 @@ svg.logo {
 
 /* buttons */
 .btn {
-  @apply inline-block rounded-md bg-gradient-to-r from-primary to-secondary px-4 py-2 font-semibold text-heading transition-opacity;
+  @apply inline-block rounded-md bg-linear-to-r from-primary to-secondary px-4 py-2 font-semibold text-heading transition-opacity;
 }
 .btn:hover {
   @apply opacity-90;

@@ -88,3 +88,6 @@ app/
 - **Minimal Tailwind in templates**: don't apply Tailwind classes directly in component markup unless essential — one class at most. If an element needs more than a single Tailwind class, combine them into a custom class via `@apply` instead.
 - **Minimal dependencies**: prefer the standard library / existing project tooling over adding a new package.
 - **Branching**: use `git switch -c <branch>` to create and switch to a new branch, not `git checkout -b`.
+
+## Checking Documentation
+-**important:** When implementing any lib/framework-specific features, ALWAYS check the approrpiate lib/framework documentation using the Context7 MCP server before writing any code.
