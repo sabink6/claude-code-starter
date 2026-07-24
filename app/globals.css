@@ -12,6 +12,9 @@
   --color-error: #FF6467;
   --color-heading: white;
   --color-body: #99A1AF;
+  --color-cta-start: #9810FA;
+  --color-cta-end: #E60076;
+  --radius-btn: 10px;
   --font-sans: 'Inter', sans-serif;
 }
 
@@ -46,11 +49,11 @@ svg.logo {
 
 /* buttons */
 .btn {
-  @apply inline-block rounded-md bg-linear-to-r from-primary to-secondary px-4 py-2 font-semibold text-heading transition-opacity;
+  @apply inline-flex items-center justify-center gap-2 rounded-btn bg-linear-to-r from-cta-start to-cta-end px-4 py-2 font-semibold text-heading transition-opacity;
 }
 .btn:hover {
   @apply opacity-90;
 }
 .btn:focus-visible {
-  @apply outline-2 outline-offset-2 outline-primary;
+  @apply outline-2 outline-offset-2 outline-cta-start;
 }
