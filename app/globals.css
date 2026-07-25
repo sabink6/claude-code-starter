@@ -57,3 +57,6 @@ svg.logo {
 .btn:focus-visible {
   @apply outline-2 outline-offset-2 outline-cta-start;
 }
+.btn:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}

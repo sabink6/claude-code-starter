@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Eye, EyeOff } from "lucide-react"
 import Field from "./Field"
 import styles from "./AuthForm.module.css"
+import { signUp } from "@/lib/firebase/signup"
 
 type Mode = "login" | "signup"
 
@@ -36,15 +38,17 @@ const copy: Record<Mode, ModeCopy> = {
 }
 
 export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
+  const router = useRouter()
   const [mode, setMode] = useState<Mode>(initialMode)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const text = copy[mode]
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!email || !password) {
@@ -57,7 +61,25 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     }
 
     setError("")
-    console.log("auth form submitted", { form: mode, email, password })
+
+    if (mode === "login") {
+      console.log("auth form submitted", { form: mode })
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      await signUp(email, password)
+      router.push("/heists")
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   function switchMode() {
@@ -104,7 +126,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
         </p>
       )}
 
-      <button className="btn" type="submit">
+      <button className="btn" type="submit" disabled={isSubmitting}>
         {text.submit}
       </button>
 
