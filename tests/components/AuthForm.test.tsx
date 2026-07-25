@@ -1,12 +1,20 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 
 import AuthForm from "@/components/AuthForm"
+import { signUp } from "@/lib/firebase/signup"
+
+vi.mock("@/lib/firebase/signup", () => ({ signUp: vi.fn() }))
+
+const mockPush = vi.fn()
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mockPush }) }))
 
 describe("AuthForm", () => {
   beforeEach(() => {
     vi.spyOn(console, "log").mockImplementation(() => {})
+    vi.mocked(signUp).mockReset()
+    mockPush.mockReset()
   })
 
   afterEach(() => {
@@ -57,6 +65,7 @@ describe("AuthForm", () => {
       email: "thief@example.com",
       password: "loot123",
     })
+    expect(signUp).not.toHaveBeenCalled()
   })
 
   it("does not log when a required field is empty", async () => {
@@ -82,6 +91,83 @@ describe("AuthForm", () => {
 
     expect(logSpy).not.toHaveBeenCalled()
     expect(screen.getByRole("alert")).toBeInTheDocument()
+  })
+
+  it("does not call signUp when a required field is empty in signup mode", async () => {
+    const user = userEvent.setup()
+    render(<AuthForm initialMode="signup" />)
+
+    await user.type(screen.getByLabelText("Email"), "thief@example.com")
+    await user.click(screen.getByRole("button", { name: "Sign Up" }))
+
+    expect(signUp).not.toHaveBeenCalled()
+    expect(screen.getByRole("alert")).toBeInTheDocument()
+  })
+
+  it("does not call signUp when the email format is invalid in signup mode", async () => {
+    const user = userEvent.setup()
+    render(<AuthForm initialMode="signup" />)
+
+    await user.type(screen.getByLabelText("Email"), "not-an-email")
+    await user.type(screen.getByLabelText("Password"), "loot123")
+    await user.click(screen.getByRole("button", { name: "Sign Up" }))
+
+    expect(signUp).not.toHaveBeenCalled()
+    expect(screen.getByRole("alert")).toBeInTheDocument()
+  })
+
+  it("calls signUp and redirects to /heists on successful signup", async () => {
+    const user = userEvent.setup()
+    vi.mocked(signUp).mockResolvedValueOnce(undefined)
+    render(<AuthForm initialMode="signup" />)
+
+    await user.type(screen.getByLabelText("Email"), "thief@example.com")
+    await user.type(screen.getByLabelText("Password"), "loot123")
+    await user.click(screen.getByRole("button", { name: "Sign Up" }))
+
+    await waitFor(() => {
+      expect(signUp).toHaveBeenCalledWith("thief@example.com", "loot123")
+    })
+    expect(mockPush).toHaveBeenCalledWith("/heists")
+  })
+
+  it("shows the signUp error message and does not redirect on failure", async () => {
+    const user = userEvent.setup()
+    vi.mocked(signUp).mockRejectedValueOnce(
+      new Error("That email is already registered."),
+    )
+    render(<AuthForm initialMode="signup" />)
+
+    await user.type(screen.getByLabelText("Email"), "thief@example.com")
+    await user.type(screen.getByLabelText("Password"), "loot123")
+    await user.click(screen.getByRole("button", { name: "Sign Up" }))
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "That email is already registered.",
+    )
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it("disables the submit button while signUp is pending", async () => {
+    const user = userEvent.setup()
+    let resolveSignUp: () => void = () => {}
+    vi.mocked(signUp).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveSignUp = () => resolve(undefined)
+      }),
+    )
+    render(<AuthForm initialMode="signup" />)
+
+    await user.type(screen.getByLabelText("Email"), "thief@example.com")
+    await user.type(screen.getByLabelText("Password"), "loot123")
+    await user.click(screen.getByRole("button", { name: "Sign Up" }))
+
+    expect(screen.getByRole("button", { name: "Sign Up" })).toBeDisabled()
+
+    resolveSignUp()
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Sign Up" })).not.toBeDisabled()
+    })
   })
 
   it("switches to the other form and keeps the email but clears the password", async () => {
