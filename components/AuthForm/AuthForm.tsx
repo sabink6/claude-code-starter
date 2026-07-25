@@ -63,7 +63,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     setError("")
 
     if (mode === "login") {
-      console.log("auth form submitted", { form: mode, email, password })
+      console.log("auth form submitted", { form: mode })
       return
     }
 
