@@ -62,8 +62,6 @@ describe("AuthForm", () => {
 
     expect(logSpy).toHaveBeenCalledWith("auth form submitted", {
       form: "login",
-      email: "thief@example.com",
-      password: "loot123",
     })
     expect(signUp).not.toHaveBeenCalled()
   })
