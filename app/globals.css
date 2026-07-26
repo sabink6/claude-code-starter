@@ -46,6 +46,9 @@ svg.logo {
 .form-title {
   @apply text-center text-xl font-bold;
 }
+.splash-actions {
+  @apply flex gap-3;
+}
 
 /* buttons */
 .btn {
@@ -57,6 +60,7 @@ svg.logo {
 .btn:focus-visible {
   @apply outline-2 outline-offset-2 outline-cta-start;
 }
-.btn:disabled {
+.btn:disabled,
+.btn[aria-disabled="true"] {
   @apply opacity-50 cursor-not-allowed;
 }

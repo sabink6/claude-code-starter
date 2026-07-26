@@ -1,22 +1,7 @@
-"use client"
-
-// this page should be used only as a splash page to decide where a user should be navigated to
-// when logged in --> to /heists
-// when not logged in --> to /login
-// TODO(follow-up, out of scope for auth-state-hook spec): once loading resolves,
-// redirect() to /heists or /login based on `user` — see _specs/auth-state-hook.md
-
 import { Clock8 } from "lucide-react"
-
-import { useUser } from "@/lib/firebase/auth-context"
+import Link from "next/link"
 
 export default function Home() {
-  const { loading } = useUser()
-
-  if (loading) {
-    return null
-  }
-
   return (
     <div className="center-content">
       <div className="page-content">
@@ -33,6 +18,14 @@ export default function Home() {
           shipping features without breaking a sweat. Treat every ticket as a
           heist waiting to be pulled off, and every merged pull request as your
           getaway car.
+        </p>
+        <p className="splash-actions">
+          <Link href="/login" className="btn">
+            Log In
+          </Link>
+          <Link href="/heists" className="btn">
+            View Heists
+          </Link>
         </p>
       </div>
     </div>
