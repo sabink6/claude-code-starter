@@ -13,7 +13,6 @@ Pocket Heist — "Small heists. Big chaos." Starter project for the Claude Code 
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 + CSS Modules |
 | Testing | Vitest + Testing Library (jsdom) |
-| Backend | Firebase (Auth + Firestore) |
 
 ## Commands
 
@@ -46,19 +45,8 @@ app/
         └── [id]/           # detail
 ```
 
-- `/login` and `/signup` share one `AuthForm` client component (`components/AuthForm/`). Switching between the two modes is a client-side state flip, not a route navigation.
-
-## Auth
-
-- Firebase is initialized once in `lib/firebase/config.ts` (exports `auth`, `db`), read from `NEXT_PUBLIC_FIREBASE_*` env vars.
-- `UserProvider` (`lib/firebase/auth-context.tsx`) wraps the whole app in the root `app/layout.tsx` and tracks `onAuthStateChanged`. Any component reads auth state via the `useUser()` hook → `{ user: User | null, loading: boolean }`. It throws if called outside the provider, so it's always safe to call directly.
-- Auth actions live in their own modules, each mapping Firebase error codes to user-facing messages rather than surfacing raw SDK errors: `lib/firebase/login.ts` (`signIn`), `lib/firebase/signup.ts` (`signUp` — also generates a unique `codename` via `lib/codename.ts` and writes a `users/{uid}` Firestore doc, rolling back the created auth user if that write fails), `lib/firebase/logout.ts` (`logOut`).
-- **Route guards**: `app/(public)/layout.tsx` and `app/(dashboard)/layout.tsx` are both `"use client"` and gate rendering on `useUser()` — `(public)` redirects an authenticated user to `/heists`, `(dashboard)` redirects an unauthenticated one to `/login` (`/preview` is exempt from the `(public)` guard). Conventions to follow for any new guard/redirect logic:
-  - Redirect with `router.replace()`, never `push()` — the gated page shouldn't land in browser history.
-  - Show `components/Spinner` (not a bare `null`) while `loading` or a redirect is pending, so there's no flash of the wrong content.
-  - Loading indicators need `role="status"` + `aria-label`; decorative icons inside them need `aria-hidden="true"`.
-  - These are client-side UX guards only, not a security boundary — Firestore Security Rules are what actually protect user/heist data.
-  - In tests, assert redirects with `await waitFor(() => expect(mockReplace).toHaveBeenCalledWith(...))`, never synchronously right after `render()`.
+- `app/(public)/page.tsx` is meant to redirect: logged in → `/heists`, logged out → `/login`. **Not implemented yet** — it currently renders static content only.
+- `/login` and `/signup` share one `AuthForm` client component (`components/AuthForm/`). Switching between the two modes is a client-side state flip, not a route navigation, and submission currently only `console.log`s the entered data — there's no real auth backend yet.
 
 ## Conventions
 
