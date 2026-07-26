@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Eye, EyeOff } from "lucide-react"
 import Field from "./Field"
 import styles from "./AuthForm.module.css"
+import { signIn } from "@/lib/firebase/login"
 import { signUp } from "@/lib/firebase/signup"
 
 type Mode = "login" | "signup"
@@ -19,6 +20,8 @@ type ModeCopy = {
   prompt: string
   switch: string
 }
+
+type FormMessage = { type: "success" | "error"; text: string } | null
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -43,7 +46,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
+  const [message, setMessage] = useState<FormMessage>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const text = copy[mode]
@@ -52,31 +55,36 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     event.preventDefault()
 
     if (!email || !password) {
-      setError("Please enter both an email and a password.")
+      setMessage({
+        type: "error",
+        text: "Please enter both an email and a password.",
+      })
       return
     }
     if (!EMAIL_PATTERN.test(email)) {
-      setError("Please enter a valid email address.")
+      setMessage({ type: "error", text: "Please enter a valid email address." })
       return
     }
 
-    setError("")
-
-    if (mode === "login") {
-      console.log("auth form submitted", { form: mode })
-      return
-    }
-
+    setMessage(null)
     setIsSubmitting(true)
     try {
-      await signUp(email, password)
-      router.push("/heists")
+      if (mode === "login") {
+        await signIn(email, password)
+        setPassword("")
+        setMessage({ type: "success", text: "Login successful" })
+      } else {
+        await signUp(email, password)
+        router.push("/heists")
+      }
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again.",
-      )
+      setMessage({
+        type: "error",
+        text:
+          err instanceof Error
+            ? err.message
+            : "Something went wrong. Please try again.",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -86,7 +94,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     setMode(mode === "login" ? "signup" : "login")
     setPassword("")
     setShowPassword(false)
-    setError("")
+    setMessage(null)
   }
 
   return (
@@ -120,9 +128,12 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
         </button>
       </Field>
 
-      {error && (
-        <p className={styles.error} role="alert">
-          {error}
+      {message && (
+        <p
+          className={message.type === "success" ? styles.success : styles.error}
+          role={message.type === "success" ? "status" : "alert"}
+        >
+          {message.text}
         </p>
       )}
 

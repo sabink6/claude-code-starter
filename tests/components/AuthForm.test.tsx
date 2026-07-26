@@ -3,8 +3,10 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 
 import AuthForm from "@/components/AuthForm"
+import { signIn } from "@/lib/firebase/login"
 import { signUp } from "@/lib/firebase/signup"
 
+vi.mock("@/lib/firebase/login", () => ({ signIn: vi.fn() }))
 vi.mock("@/lib/firebase/signup", () => ({ signUp: vi.fn() }))
 
 const mockPush = vi.fn()
@@ -12,7 +14,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mockPush }) }))
 
 describe("AuthForm", () => {
   beforeEach(() => {
-    vi.spyOn(console, "log").mockImplementation(() => {})
+    vi.mocked(signIn).mockReset()
     vi.mocked(signUp).mockReset()
     mockPush.mockReset()
   })
@@ -51,43 +53,82 @@ describe("AuthForm", () => {
     expect(password).toHaveAttribute("type", "password")
   })
 
-  it("logs the form data on submit with valid input", async () => {
+  it("signs the user in and shows a success message on valid login", async () => {
     const user = userEvent.setup()
-    const logSpy = vi.spyOn(console, "log")
+    vi.mocked(signIn).mockResolvedValueOnce(undefined)
     render(<AuthForm initialMode="login" />)
 
     await user.type(screen.getByLabelText("Email"), "thief@example.com")
     await user.type(screen.getByLabelText("Password"), "loot123")
     await user.click(screen.getByRole("button", { name: "Login" }))
 
-    expect(logSpy).toHaveBeenCalledWith("auth form submitted", {
-      form: "login",
+    await waitFor(() => {
+      expect(signIn).toHaveBeenCalledWith("thief@example.com", "loot123")
     })
-    expect(signUp).not.toHaveBeenCalled()
+    expect(screen.getByText("Login successful")).toBeInTheDocument()
+    expect(screen.getByLabelText("Password")).toHaveValue("")
+    expect(mockPush).not.toHaveBeenCalled()
   })
 
-  it("does not log when a required field is empty", async () => {
+  it("shows an error message and does not show success on failed login", async () => {
     const user = userEvent.setup()
-    const logSpy = vi.spyOn(console, "log")
+    vi.mocked(signIn).mockRejectedValueOnce(
+      new Error("Incorrect email or password."),
+    )
+    render(<AuthForm initialMode="login" />)
+
+    await user.type(screen.getByLabelText("Email"), "thief@example.com")
+    await user.type(screen.getByLabelText("Password"), "loot123")
+    await user.click(screen.getByRole("button", { name: "Login" }))
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Incorrect email or password.",
+    )
+    expect(screen.queryByText("Login successful")).not.toBeInTheDocument()
+  })
+
+  it("disables the submit button while signIn is pending", async () => {
+    const user = userEvent.setup()
+    let resolveSignIn: () => void = () => {}
+    vi.mocked(signIn).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveSignIn = () => resolve(undefined)
+      }),
+    )
+    render(<AuthForm initialMode="login" />)
+
+    await user.type(screen.getByLabelText("Email"), "thief@example.com")
+    await user.type(screen.getByLabelText("Password"), "loot123")
+    await user.click(screen.getByRole("button", { name: "Login" }))
+
+    expect(screen.getByRole("button", { name: "Login" })).toBeDisabled()
+
+    resolveSignIn()
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Login" })).not.toBeDisabled()
+    })
+  })
+
+  it("does not call signIn when a required field is empty", async () => {
+    const user = userEvent.setup()
     render(<AuthForm initialMode="login" />)
 
     await user.type(screen.getByLabelText("Email"), "thief@example.com")
     await user.click(screen.getByRole("button", { name: "Login" }))
 
-    expect(logSpy).not.toHaveBeenCalled()
+    expect(signIn).not.toHaveBeenCalled()
     expect(screen.getByRole("alert")).toBeInTheDocument()
   })
 
-  it("does not log when the email format is invalid", async () => {
+  it("does not call signIn when the email format is invalid", async () => {
     const user = userEvent.setup()
-    const logSpy = vi.spyOn(console, "log")
     render(<AuthForm initialMode="login" />)
 
     await user.type(screen.getByLabelText("Email"), "not-an-email")
     await user.type(screen.getByLabelText("Password"), "loot123")
     await user.click(screen.getByRole("button", { name: "Login" }))
 
-    expect(logSpy).not.toHaveBeenCalled()
+    expect(signIn).not.toHaveBeenCalled()
     expect(screen.getByRole("alert")).toBeInTheDocument()
   })
 
@@ -127,6 +168,7 @@ describe("AuthForm", () => {
       expect(signUp).toHaveBeenCalledWith("thief@example.com", "loot123")
     })
     expect(mockPush).toHaveBeenCalledWith("/heists")
+    expect(signIn).not.toHaveBeenCalled()
   })
 
   it("shows the signUp error message and does not redirect on failure", async () => {

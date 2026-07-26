@@ -44,6 +44,10 @@
   @apply text-sm text-error;
 }
 
+.success {
+  @apply text-sm text-success;
+}
+
 .switch {
   @apply text-center text-sm;
 }
