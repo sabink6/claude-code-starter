@@ -1,0 +1,5 @@
+@reference "../../app/globals.css";
+
+.spinner {
+  @apply mx-auto animate-spin;
+}
