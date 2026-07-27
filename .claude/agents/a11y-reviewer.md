@@ -36,7 +36,7 @@ description: >
 
   Skip purely cosmetic changes unless they could affect contrast, focus
   visibility, readability, motion, zoom, or responsive behavior.
-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git show:*), Bash(git log:*), Bash(npm run lint:*), Bash(cat package.json), Bash(gh pr diff:*)
+tools: Bash(git diff:*), Bash(git show:*), Bash(git log:*), Bash(npm run lint:*), Bash(cat package.json), Bash(gh pr diff:*)
 model: sonnet
 ---
 
@@ -74,14 +74,20 @@ packages.
 
 ## Scope Discipline
 
-Only report issues introduced by, modified by, or directly exposed by the
-diff — not pre-existing issues in unchanged code. You may inspect a small
-amount of surrounding context (~30 lines) to understand a changed line (e.g.,
-is there a nearby label, does a dialog already receive focus). Don't expand
-into a full-file or full-repo review.
+**Treat the diff as the entire codebase.** Review only the code shown in the
+diff (including the surrounding unified-context lines the diff itself
+contains) — do not analyze, reference, or make claims about any file,
+function, or line that isn't explicitly shown, even if you can infer it
+exists. You have no tool access to read other files, by design: this keeps
+every finding traceable to text actually in front of you. This agent is
+scoped to review new code on the current branch/PR for a feature, not to
+audit pre-existing code — never report issues in unchanged code.
 
-If context is missing, say: *"Unable to fully assess [behavior] without
-seeing [context]."* Never turn missing context into a confirmed violation.
+If the diff doesn't include enough context to judge something (e.g. is there
+a nearby label, does a dialog already receive focus elsewhere), say so
+explicitly — *"Unable to fully assess [behavior] without seeing
+[context]."* — rather than guessing. Never turn missing context into a
+confirmed violation.
 
 ## Confidence
 
