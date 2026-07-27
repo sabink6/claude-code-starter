@@ -1,14 +1,21 @@
 ---
 description: Create a UI component using TDD (test-driven development)
 allowed-tools: Read, Write, Edit, Glob, Bash(npm test:*), Bash(npx vitest:*)
-argument-hint: "[Brief description]"
+argument-hint: "[Brief description] OR [path/to/image.png] [optional description]"
 ---
 
 ## User Input:
 The user has provided information about the component to make: **$ARGUMENTS**
 
 ## Do thus first:
-From the component information above, determine a PascalCase component name (e.g., "a card showing user stats" → `UserStatsCard`).
+
+**Check for an image reference first.** If `$ARGUMENTS` contains a path ending in `.png`, `.jpg`, `.jpeg`, `.webp`, or `.svg` (typically under `public/`):
+- Use the Read tool on that image path to view it — Read renders images visually, so look at it directly rather than guessing from the filename.
+- Treat the image as the primary design reference for layout, spacing, colors, and typography. Any remaining text in `$ARGUMENTS` after the path is a naming hint / extra requirements, not a substitute for what's visible in the image.
+- Before writing markup, reconcile what you see against this project's existing design system: check `app/globals.css`'s `@theme` token block (`--color-*`, `--font-*`, `--radius-*`) and existing utility classes (`.btn`, `.case-tag`, `.heist-panel`, `.splash-*`, etc.) for matches — reuse an existing token/class instead of hardcoding a value that's already a token. Only introduce a new token if nothing existing is close.
+- If no text description accompanies the image, infer a sensible PascalCase name from what the image depicts (e.g. a card showing a user's stats → `UserStatsCard`).
+
+**Otherwise**, from the component information above, determine a PascalCase component name (e.g., "a card showing user stats" → `UserStatsCard`).
 
 ### 1. Write Tests First
 Create `tests/components/[ComponentName].test.tsx` with 2-3 simple tests:
