@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Special+Elite&display=swap');
 @import "tailwindcss";
 
 /* theme colours */
@@ -16,6 +16,7 @@
   --color-cta-end: #E60076;
   --radius-btn: 10px;
   --font-sans: 'Inter', sans-serif;
+  --font-display: 'Special Elite', 'Courier New', monospace;
 }
 
 /* typography */
@@ -29,7 +30,7 @@ h1, h2, h3, h4 {
 /* generic layout styles */
 .public {
   h1 {
-    @apply text-4xl;
+    @apply text-4xl md:text-6xl;
   }
 }
 svg.logo {
@@ -48,6 +49,70 @@ svg.logo {
 }
 .splash-actions {
   @apply flex gap-3;
+}
+
+/* splash page — "case file" briefing treatment */
+.splash-hero {
+  @apply relative py-6;
+}
+.splash-hero::before,
+.splash-hero::after {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: var(--color-primary);
+  opacity: 0.7;
+}
+.splash-hero::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+.splash-hero::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+.splash-tag {
+  @apply inline-block mb-4 rounded-btn border border-dashed border-secondary px-3 py-1 text-xs font-semibold tracking-widest text-secondary uppercase;
+  font-family: var(--font-display);
+  transform: rotate(-2deg);
+  animation: splash-stamp 0.5s ease-out;
+}
+@keyframes splash-stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-2deg) scale(1.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-2deg) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-tag {
+    animation: none;
+  }
+}
+.splash-title {
+  font-family: var(--font-display);
+  @apply tracking-tight leading-tight;
+}
+.splash-lede {
+  @apply mt-2 text-sm font-semibold tracking-wide text-secondary uppercase;
+}
+.splash-footnote {
+  @apply mt-4 text-sm text-body;
+
+  a {
+    @apply font-semibold text-primary;
+  }
+  a:hover {
+    @apply underline;
+  }
 }
 
 /* buttons */
