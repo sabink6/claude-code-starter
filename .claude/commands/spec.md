@@ -1,7 +1,7 @@
 ---
 description: Create a feature spec file and branch from a short idea
 argument-hint: "[Short feature description, optional: 'figma: <component-link>']"
-allowed-tools: Read, Write, Glob, Bash(git switch:*)
+allowed-tools: Read, Write, Glob, Bash(git switch:*), Agent
 ---
 
 You are helping to spin up a new feature spec for this application, from a short idea provided in the user input below. Always adhere to any rules or requirements set out in any CLAUDE.md files when responding.
@@ -57,19 +57,13 @@ From `$ARGUMENTS`, extract:
 
 If you cannot infer a sensible `feature_title` and `feature_slug`, ask the user to clarify instead of guessing.
 
-If `figma_hint` is present and Figma MCP tools are available:
+If `figma_hint` is present:
 
 ## Step 2.1 Pull Figma context when needed
 
-1. Use the Figma MCP tools to locate the component, layer or frame.
-2. Extract only information that is useful for implementation, such as:
-   - Dimensions and layout (grid, spacing, alignment)
-   - Key typography tokens (font family, size, weight)
-   - Color tokens and semantic usage (primary, surface, border, error etc.)
-   - Border radius, shadows, and any notable visual detail
-   - Icons, buttons, links or other UI elements
-3. Summarise this as 3 to 8 concise bullet points and also leave a link to the figma component for future lookups.
-4. If lookup fails or the tools are not available, record a note like:
+1. Delegate to the `figma-design-extractor` subagent, passing it the `figma_hint` link. It handles locating the node, loading the required Figma skill guidance, and reconciling colors/typography/layout against this project's existing theme tokens.
+2. From its report, keep only the design-facts sections relevant to a spec — Colors, Typography, Layout & Spacing, Shape & Effects, Icons & Imagery — and condense them into 3 to 8 concise bullet points, plus a link to the figma component for future lookups. Discard its Implementation/code-example section entirely — specs must not contain technical implementation details (see Step 4).
+3. If the subagent reports the design couldn't be retrieved (e.g. no edit access, unresolvable node), record a note like:
    - `"Design reference could not be retrieved. See Figma manually for details."`
 
 ## Step 3. Switch to a new Git branch
