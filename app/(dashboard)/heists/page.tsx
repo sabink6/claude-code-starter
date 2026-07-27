@@ -19,7 +19,7 @@ export default function HeistsPage() {
         <HeistCardGrid title="Heists You've Assigned" heists={assignedHeists} />
       </div>
       <div className="expired-heists heist-panel">
-        <HeistList title="All Expired Heists" heists={expiredHeists} />
+        <HeistList title="History" heists={expiredHeists} />
       </div>
     </div>
   )

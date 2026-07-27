@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import {
   addDoc,
   collection,
+  doc,
   onSnapshot,
   orderBy,
   query,
@@ -81,7 +82,7 @@ export function useHeists(filter: HeistFilter): Heist[] | null {
               ref,
               where("finalStatus", "in", ["success", "failure"]),
               where("deadline", "<=", now),
-              orderBy("deadline", "asc"),
+              orderBy("deadline", "desc"),
             )
 
     const unsubscribe = onSnapshot(
@@ -94,4 +95,49 @@ export function useHeists(filter: HeistFilter): Heist[] | null {
   }, [filter, user?.uid])
 
   return heists
+}
+
+export type UseHeistResult = {
+  heist: Heist | null
+  loading: boolean
+  error: boolean
+}
+
+export function useHeist(id: string): UseHeistResult {
+  const { user } = useUser()
+  const subscriptionKey = `${id}:${user?.uid ?? ""}`
+  const [key, setKey] = useState(subscriptionKey)
+  const [heist, setHeist] = useState<Heist | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  if (subscriptionKey !== key) {
+    setKey(subscriptionKey)
+    setHeist(null)
+    setLoading(true)
+    setError(false)
+  }
+
+  useEffect(() => {
+    if (!user?.uid) return
+
+    const ref = doc(db, COLLECTIONS.HEISTS, id).withConverter(heistConverter)
+
+    const unsubscribe = onSnapshot(
+      ref,
+      (snapshot) => {
+        setHeist(snapshot.exists() ? snapshot.data() : null)
+        setLoading(false)
+      },
+      (err) => {
+        console.error(err)
+        setError(true)
+        setLoading(false)
+      },
+    )
+
+    return unsubscribe
+  }, [id, user?.uid])
+
+  return { heist, loading, error }
 }

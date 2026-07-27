@@ -143,6 +143,37 @@ svg.logo {
   @apply mt-4 border-dashed opacity-80;
   border-left-color: var(--color-body);
 }
+.status-badge {
+  @apply rounded-btn px-2 py-0.5 text-xs font-semibold uppercase;
+}
+.status-badge-success {
+  @apply bg-success/15 text-success;
+}
+.status-badge-failure {
+  @apply bg-error/15 text-error;
+}
+
+/* heist detail page */
+.heist-detail {
+  @apply flex flex-col gap-4;
+}
+.heist-detail-header {
+  @apply flex items-start justify-between gap-2;
+
+  h2 {
+    font-family: var(--font-display);
+  }
+}
+.heist-detail-description {
+  @apply text-body;
+}
+.heist-detail-meta {
+  @apply flex flex-col gap-2 text-sm text-body;
+
+  span {
+    @apply flex items-center gap-2;
+  }
+}
 
 /* buttons */
 .btn {

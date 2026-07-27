@@ -1,3 +1,6 @@
+import Link from "next/link"
+
+import StatusBadge from "@/components/StatusBadge"
 import type { Heist } from "@/types/firestore"
 import styles from "./HeistList.module.css"
 
@@ -18,18 +21,8 @@ export default function HeistList({ title, heists }: HeistListProps) {
         <ul className={styles.list}>
           {heists.map((heist) => (
             <li key={heist.id} className={styles.item}>
-              <span>{heist.title}</span>
-              {heist.finalStatus && (
-                <span
-                  className={
-                    heist.finalStatus === "success"
-                      ? styles.statusSuccess
-                      : styles.statusFailure
-                  }
-                >
-                  {heist.finalStatus}
-                </span>
-              )}
+              <Link href={`/heists/${heist.id}`}>{heist.title}</Link>
+              {heist.finalStatus && <StatusBadge status={heist.finalStatus} />}
             </li>
           ))}
         </ul>

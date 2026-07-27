@@ -77,9 +77,7 @@ describe("HeistsPage", () => {
     expect(
       screen.getByRole("heading", { name: "Heists You've Assigned" }),
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole("heading", { name: "All Expired Heists" }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "History" })).toBeInTheDocument()
   })
 
   it("renders a HeistCard link to the detail page for each active/assigned heist", () => {
@@ -129,5 +127,10 @@ describe("HeistsPage", () => {
     expect(
       within(expiredSection).queryByRole("heading", { level: 3 }),
     ).not.toBeInTheDocument()
+    expect(
+      within(expiredSection).getByRole("link", {
+        name: "The one that got away",
+      }),
+    ).toHaveAttribute("href", "/heists/expired-1")
   })
 })
