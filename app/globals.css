@@ -115,6 +115,34 @@ svg.logo {
   }
 }
 
+/* heists dashboard — quieter echo of the splash page's case-file language */
+.case-tag {
+  @apply mb-4 inline-block rounded-btn border border-dashed border-secondary px-3 py-1 text-xs font-semibold tracking-widest text-secondary uppercase;
+  font-family: var(--font-display);
+}
+.heists-grid {
+  @apply grid grid-cols-1 gap-4 md:grid-cols-2;
+}
+.heist-panel {
+  @apply rounded-btn border border-lighter bg-light p-4;
+  border-left-width: 3px;
+
+  h2 {
+    @apply mb-3 text-lg;
+    font-family: var(--font-display);
+  }
+}
+.active-heists {
+  border-left-color: var(--color-primary);
+}
+.assigned-heists {
+  border-left-color: var(--color-secondary);
+}
+.expired-heists {
+  @apply mt-4 border-dashed opacity-80;
+  border-left-color: var(--color-body);
+}
+
 /* buttons */
 .btn {
   @apply inline-flex items-center justify-center gap-2 rounded-btn bg-linear-to-r from-cta-start to-cta-end px-4 py-2 font-semibold text-heading transition-opacity;
