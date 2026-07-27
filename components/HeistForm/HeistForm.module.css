@@ -1,0 +1,38 @@
+@reference "../../app/globals.css";
+
+.form {
+  @apply mx-auto flex w-full max-w-sm flex-col gap-4;
+}
+
+.field {
+  @apply flex flex-col gap-1;
+}
+
+.label {
+  @apply text-sm font-medium text-heading;
+}
+
+.input,
+.textarea,
+.select {
+  @apply w-full rounded-md bg-lighter px-3 py-2 text-heading;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+.select:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.error {
+  @apply text-sm text-error;
+}
