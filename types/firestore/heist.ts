@@ -1,7 +1,9 @@
 import type {
   DocumentData,
   FieldValue,
+  FirestoreDataConverter,
   QueryDocumentSnapshot,
+  WithFieldValue,
 } from "firebase/firestore"
 
 export type HeistStatus = "success" | "failure"
@@ -46,8 +48,8 @@ export interface UpdateHeistInput {
   finalStatus?: HeistStatus | null
 }
 
-export const heistConverter = {
-  toFirestore: (data: Partial<Heist>): DocumentData => data,
+export const heistConverter: FirestoreDataConverter<Heist> = {
+  toFirestore: (data: WithFieldValue<Heist>): DocumentData => data,
 
   fromFirestore: (snapshot: QueryDocumentSnapshot): Heist =>
     ({
