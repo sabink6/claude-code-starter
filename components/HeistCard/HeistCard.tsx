@@ -1,17 +1,9 @@
 import { Calendar, Clock, User } from "lucide-react"
 import Link from "next/link"
 
+import { formatDeadline } from "@/lib/formatDeadline"
 import type { Heist } from "@/types/firestore"
 import styles from "./HeistCard.module.css"
-
-function formatDeadline(deadline: Date): string {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(deadline)
-}
 
 type HeistCardProps = {
   heist: Heist

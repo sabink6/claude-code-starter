@@ -13,6 +13,14 @@ vi.mock("firebase/firestore", () => ({
       return this
     }),
   })),
+  doc: vi.fn((_db, path, id) => ({
+    type: "doc",
+    path,
+    id,
+    withConverter: vi.fn(function (this: unknown) {
+      return this
+    }),
+  })),
   serverTimestamp: vi.fn(() => ({ type: "serverTimestamp" })),
   query: vi.fn((ref, ...clauses) => ({ type: "query", ref, clauses })),
   where: vi.fn((field, op, value) => ({ type: "where", field, op, value })),
@@ -20,10 +28,22 @@ vi.mock("firebase/firestore", () => ({
   onSnapshot: vi.fn(),
 }))
 
-import { addDoc, onSnapshot, orderBy, query, where } from "firebase/firestore"
+import {
+  addDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore"
 
 import { useUser } from "@/lib/firebase/auth-context"
-import { FALLBACK_MESSAGE, createHeist, useHeists } from "@/lib/firebase/heists"
+import {
+  FALLBACK_MESSAGE,
+  createHeist,
+  useHeist,
+  useHeists,
+} from "@/lib/firebase/heists"
 
 const baseInput = {
   title: "Steal the crown jewels",
@@ -151,7 +171,7 @@ describe("useHeists", () => {
       "failure",
     ])
     expect(where).toHaveBeenCalledWith("deadline", "<=", expect.any(Date))
-    expect(orderBy).toHaveBeenCalledWith("deadline", "asc")
+    expect(orderBy).toHaveBeenCalledWith("deadline", "desc")
     expect(where).not.toHaveBeenCalledWith(
       "assignedTo",
       expect.anything(),
@@ -220,6 +240,112 @@ describe("useHeists", () => {
 
     expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error))
     expect(result.current).toBeNull()
+
+    consoleSpy.mockRestore()
+  })
+})
+
+type DocSnapshot = {
+  exists: () => boolean
+  data: () => Record<string, unknown>
+}
+type DocSnapshotCallback = (snapshot: DocSnapshot) => void
+
+function fakeDocSnapshot(fields: Record<string, unknown> | null): DocSnapshot {
+  return {
+    exists: () => fields !== null,
+    data: () => fields as Record<string, unknown>,
+  }
+}
+
+describe("useHeist", () => {
+  const currentUser = { uid: "uid-current" } as User
+  let capturedNext: DocSnapshotCallback
+  let capturedError: ErrorCallback
+  const unsubscribeSpy = vi.fn()
+
+  beforeEach(() => {
+    vi.mocked(doc).mockClear()
+    vi.mocked(useUser).mockReturnValue({ user: currentUser, loading: false })
+    vi.mocked(onSnapshot)
+      .mockReset()
+      .mockImplementation((_ref, onNext, onError) => {
+        capturedNext = onNext as DocSnapshotCallback
+        capturedError = onError as ErrorCallback
+        return unsubscribeSpy
+      })
+    unsubscribeSpy.mockReset()
+  })
+
+  it("builds a doc ref for the given id", () => {
+    renderHook(() => useHeist("heist-1"))
+
+    expect(doc).toHaveBeenCalledWith(expect.anything(), "heists", "heist-1")
+  })
+
+  it("returns heist null and loading true before the first snapshot fires", () => {
+    const { result } = renderHook(() => useHeist("heist-1"))
+
+    expect(result.current).toEqual({ heist: null, loading: true, error: false })
+  })
+
+  it("returns the mapped heist and loading false once a snapshot fires for an existing document", () => {
+    const { result } = renderHook(() => useHeist("heist-1"))
+
+    act(() => {
+      capturedNext(
+        fakeDocSnapshot({ id: "heist-1", title: "Steal the crown jewels" }),
+      )
+    })
+
+    expect(result.current).toEqual({
+      heist: { id: "heist-1", title: "Steal the crown jewels" },
+      loading: false,
+      error: false,
+    })
+  })
+
+  it("returns heist null and loading false once a snapshot fires for a missing document", () => {
+    const { result } = renderHook(() => useHeist("does-not-exist"))
+
+    act(() => {
+      capturedNext(fakeDocSnapshot(null))
+    })
+
+    expect(result.current).toEqual({
+      heist: null,
+      loading: false,
+      error: false,
+    })
+  })
+
+  it("unsubscribes on unmount", () => {
+    const { unmount } = renderHook(() => useHeist("heist-1"))
+
+    unmount()
+
+    expect(unsubscribeSpy).toHaveBeenCalled()
+  })
+
+  it("returns loading true and never subscribes when there is no signed-in user", () => {
+    vi.mocked(useUser).mockReturnValue({ user: null, loading: false })
+
+    const { result } = renderHook(() => useHeist("heist-1"))
+
+    expect(result.current).toEqual({ heist: null, loading: true, error: false })
+    expect(onSnapshot).not.toHaveBeenCalled()
+  })
+
+  it("logs subscription errors, stops loading, and sets error without throwing", () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+    const { result } = renderHook(() => useHeist("heist-1"))
+
+    act(() => {
+      capturedError(new Error("permission-denied"))
+    })
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error))
+    expect(result.current).toEqual({ heist: null, loading: false, error: true })
 
     consoleSpy.mockRestore()
   })

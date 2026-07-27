@@ -11,16 +11,3 @@
 .item {
   @apply flex items-center justify-between gap-2 py-2 text-sm;
 }
-
-.statusSuccess,
-.statusFailure {
-  @apply rounded-btn px-2 py-0.5 text-xs font-semibold uppercase;
-}
-
-.statusSuccess {
-  @apply bg-success/15 text-success;
-}
-
-.statusFailure {
-  @apply bg-error/15 text-error;
-}

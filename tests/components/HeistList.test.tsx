@@ -52,4 +52,13 @@ describe("HeistList", () => {
     expect(items[0]).toHaveTextContent("Steal the crown jewels")
     expect(items[1]).toHaveTextContent("Swipe the getaway van keys")
   })
+
+  it("links each item's title to its own heist detail page", () => {
+    const heists = [fakeHeist("heist-42", "Steal the crown jewels")]
+    render(<HeistList title="History" heists={heists} />)
+
+    expect(
+      screen.getByRole("link", { name: "Steal the crown jewels" }),
+    ).toHaveAttribute("href", "/heists/heist-42")
+  })
 })
