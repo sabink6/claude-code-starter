@@ -4,28 +4,25 @@ import Link from "next/link"
 export default function Home() {
   return (
     <div className="center-content">
-      <div className="page-content">
-        <h1>
+      <div className="page-content splash-hero">
+        <span className="splash-tag">Now Recruiting</span>
+        <h1 className="splash-title">
           P<Clock8 className="logo" strokeWidth={2.75} />
           cket Heist
         </h1>
-        <div>Small heists. Big chaos.</div>
+        <p className="splash-lede">Small heists. Big chaos.</p>
         <p>
-          Plan the heist. Cause the chaos. Brag later. Pocket Heist is the
-          Claude Code Masterclass starter app — this splash page decides where
-          you land next. Along the way you will learn to wield Claude Code like
-          a proper conspirator: writing components, wiring up routes, and
-          shipping features without breaking a sweat. Treat every ticket as a
-          heist waiting to be pulled off, and every merged pull request as your
-          getaway car.
+          Pocket Heist is the Claude Code Masterclass starter app — every ticket
+          is a job to pull off, every merged pull request is your getaway car.
+          Sign up, grab your codename, and get to work.
         </p>
         <p className="splash-actions">
-          <Link href="/login" className="btn">
-            Log In
+          <Link href="/signup" className="btn">
+            Get Your Codename
           </Link>
-          <Link href="/heists" className="btn">
-            View Heists
-          </Link>
+        </p>
+        <p className="splash-footnote">
+          Already have a codename? <Link href="/login">Log in</Link>
         </p>
       </div>
     </div>

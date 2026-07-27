@@ -10,19 +10,27 @@ describe("Home (splash page)", () => {
     expect(screen.getByText("Small heists. Big chaos.")).toBeInTheDocument()
   })
 
-  it("renders a link to /login", () => {
+  it("renders a registration link to /signup", () => {
     render(<Home />)
 
-    const loginLink = screen.getByRole("link", { name: "Log In" })
+    const registerLink = screen.getByRole("link", { name: "Get Your Codename" })
+    expect(registerLink).toBeInTheDocument()
+    expect(registerLink).toHaveAttribute("href", "/signup")
+  })
+
+  it("renders a quiet link to /login for returning users", () => {
+    render(<Home />)
+
+    const loginLink = screen.getByRole("link", { name: "Log in" })
     expect(loginLink).toBeInTheDocument()
     expect(loginLink).toHaveAttribute("href", "/login")
   })
 
-  it("renders a link to /heists", () => {
+  it("does not render a link to /heists", () => {
     render(<Home />)
 
-    const heistsLink = screen.getByRole("link", { name: "View Heists" })
-    expect(heistsLink).toBeInTheDocument()
-    expect(heistsLink).toHaveAttribute("href", "/heists")
+    expect(
+      screen.queryByRole("link", { name: "View Heists" }),
+    ).not.toBeInTheDocument()
   })
 })
