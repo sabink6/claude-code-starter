@@ -81,4 +81,53 @@ describe("HeistsPage", () => {
       screen.getByRole("heading", { name: "All Expired Heists" }),
     ).toBeInTheDocument()
   })
+
+  it("renders a HeistCard link to the detail page for each active/assigned heist", () => {
+    const { container } = render(<HeistsPage />)
+
+    const activeSection = container.querySelector(
+      ".active-heists",
+    ) as HTMLElement
+    expect(
+      within(activeSection).getByRole("link", {
+        name: "Steal the crown jewels",
+      }),
+    ).toHaveAttribute("href", "/heists/active-1")
+
+    const assignedSection = container.querySelector(
+      ".assigned-heists",
+    ) as HTMLElement
+    expect(
+      within(assignedSection).getByRole("link", { name: "Rob the vault" }),
+    ).toHaveAttribute("href", "/heists/assigned-1")
+  })
+
+  it("shows a row of skeleton placeholders for active/assigned while loading", () => {
+    vi.mocked(useHeists).mockImplementation((filter: HeistFilter) =>
+      filter === "expired" ? fixtures.expired : null,
+    )
+    const { container } = render(<HeistsPage />)
+
+    const activeSection = container.querySelector(
+      ".active-heists",
+    ) as HTMLElement
+    const assignedSection = container.querySelector(
+      ".assigned-heists",
+    ) as HTMLElement
+    expect(within(activeSection).getAllByRole("status")).toHaveLength(3)
+    expect(within(assignedSection).getAllByRole("status")).toHaveLength(3)
+  })
+
+  it("still renders the expired section as a plain list, not cards", () => {
+    const { container } = render(<HeistsPage />)
+
+    const expiredSection = container.querySelector(
+      ".expired-heists",
+    ) as HTMLElement
+    expect(within(expiredSection).getAllByRole("listitem")).toHaveLength(1)
+    expect(within(expiredSection).queryByRole("status")).not.toBeInTheDocument()
+    expect(
+      within(expiredSection).queryByRole("heading", { level: 3 }),
+    ).not.toBeInTheDocument()
+  })
 })
