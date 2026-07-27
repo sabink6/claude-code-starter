@@ -120,8 +120,8 @@ svg.logo {
   @apply mb-4 inline-block rounded-btn border border-dashed border-secondary px-3 py-1 text-xs font-semibold tracking-widest text-secondary uppercase;
   font-family: var(--font-display);
 }
-.heists-grid {
-  @apply grid grid-cols-1 gap-4 md:grid-cols-2;
+.heist-card-grid {
+  @apply grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3;
 }
 .heist-panel {
   @apply rounded-btn border border-lighter bg-light p-4;
@@ -136,6 +136,7 @@ svg.logo {
   border-left-color: var(--color-primary);
 }
 .assigned-heists {
+  @apply mt-4;
   border-left-color: var(--color-secondary);
 }
 .expired-heists {

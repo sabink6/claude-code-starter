@@ -1,0 +1,29 @@
+@reference "../../app/globals.css";
+
+.card {
+  @apply flex animate-pulse flex-col gap-3 rounded-btn border border-dark bg-lighter p-4;
+}
+
+.header {
+  @apply flex items-start justify-between gap-2;
+}
+
+.bar {
+  @apply h-3 rounded-full bg-dark;
+}
+
+.titleBar {
+  @apply h-4 w-3/4;
+}
+
+.iconBar {
+  @apply size-4 shrink-0 rounded-full bg-dark;
+}
+
+.rowBar {
+  @apply w-2/3;
+}
+
+.rowBarNarrow {
+  @apply w-2/5;
+}
