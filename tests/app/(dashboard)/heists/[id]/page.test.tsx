@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { afterEach, describe, it, expect, vi } from "vitest"
 
 import HeistDetailsPage from "@/app/(dashboard)/heists/[id]/page"
 import { useHeist } from "@/lib/firebase/heists"
@@ -25,6 +25,10 @@ function fakeHeist(overrides: Partial<Heist> = {}): Heist {
 }
 
 describe("HeistDetailsPage", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it("shows a loading status while the heist is being fetched", () => {
     vi.mocked(useHeist).mockReturnValue({
       heist: null,
@@ -122,5 +126,35 @@ describe("HeistDetailsPage", () => {
     expect(
       screen.getByText("success", { selector: "[aria-label]" }),
     ).toHaveAttribute("aria-label", "Outcome: success")
+  })
+
+  it("shows how long is left until the deadline for an open heist", () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"))
+
+    vi.mocked(useHeist).mockReturnValue({
+      heist: fakeHeist({
+        finalStatus: null,
+        deadline: new Date("2026-01-03T05:00:00.000Z"),
+      }),
+      loading: false,
+      error: false,
+    })
+
+    render(<HeistDetailsPage />)
+
+    expect(screen.getByText("2d 5h left")).toBeInTheDocument()
+  })
+
+  it("shows the heist is closed instead of a countdown once it has a final status", () => {
+    vi.mocked(useHeist).mockReturnValue({
+      heist: fakeHeist({ finalStatus: "failure" }),
+      loading: false,
+      error: false,
+    })
+
+    render(<HeistDetailsPage />)
+
+    expect(screen.getByText("Case closed")).toBeInTheDocument()
   })
 })

@@ -160,22 +160,62 @@ body > main {
 .heist-detail {
   @apply flex flex-col gap-4;
 }
+.heist-detail-card {
+  @apply rounded-btn border border-lighter bg-light p-4 md:p-6;
+  border-left-width: 3px;
+  border-left-color: var(--color-primary);
+}
+.heist-detail-card-closed {
+  @apply border-dashed opacity-80;
+  border-left-color: var(--color-body);
+}
 .heist-detail-header {
-  @apply flex items-start justify-between gap-2;
+  @apply flex flex-wrap items-start justify-between gap-3;
 
   h2 {
+    @apply text-2xl;
     font-family: var(--font-display);
   }
 }
-.heist-detail-description {
-  @apply text-body;
+.heist-detail-people {
+  @apply mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2;
 }
-.heist-detail-meta {
-  @apply flex flex-col gap-2 text-sm text-body;
+.heist-detail-person {
+  @apply flex items-center gap-3 rounded-btn border border-lighter bg-lighter p-3;
+}
+.heist-detail-person-info {
+  @apply flex flex-col;
+}
+.heist-detail-person-label {
+  @apply text-xs font-semibold tracking-widest text-body uppercase;
+}
+.heist-detail-person-name {
+  @apply font-semibold text-heading;
+}
+.heist-detail-section {
+  @apply mt-4;
+}
+.heist-detail-section-title {
+  @apply mb-2 text-xs font-semibold tracking-widest text-body uppercase;
+}
+.heist-detail-description {
+  @apply text-body whitespace-pre-line;
+}
+.heist-detail-timeline {
+  @apply mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-lighter pt-4 text-sm text-body;
 
   span {
     @apply flex items-center gap-2;
   }
+}
+.heist-detail-time-left {
+  @apply font-semibold text-secondary;
+}
+.heist-detail-time-left-urgent {
+  @apply font-semibold text-error;
+}
+.heist-detail-time-left-closed {
+  @apply text-body;
 }
 
 /* buttons */
