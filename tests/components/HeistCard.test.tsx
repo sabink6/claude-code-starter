@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { afterEach, describe, it, expect, vi } from "vitest"
 
 import HeistCard from "@/components/HeistCard"
 import type { Heist } from "@/types/firestore"
@@ -21,6 +21,10 @@ function fakeHeist(overrides: Partial<Heist> = {}): Heist {
 }
 
 describe("HeistCard", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it("renders the heist title, assigned-to codename, and created-by codename", () => {
     render(<HeistCard heist={fakeHeist()} />)
 
@@ -49,5 +53,33 @@ describe("HeistCard", () => {
     render(<HeistCard heist={fakeHeist()} />)
 
     expect(screen.queryByText(/overdue/i)).not.toBeInTheDocument()
+  })
+
+  it("shows how long is left until the deadline", () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"))
+
+    render(
+      <HeistCard
+        heist={fakeHeist({ deadline: new Date("2026-01-03T05:00:00.000Z") })}
+      />,
+    )
+
+    expect(screen.getByText("2d 5h left")).toBeInTheDocument()
+  })
+
+  it("applies an urgent style when two hours or less remain", () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"))
+
+    render(
+      <HeistCard
+        heist={fakeHeist({ deadline: new Date("2026-01-01T01:30:00.000Z") })}
+      />,
+    )
+
+    expect(screen.getByText("1h 30m left").parentElement?.className).toMatch(
+      /timeLeftUrgent/,
+    )
   })
 })
