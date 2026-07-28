@@ -92,7 +92,8 @@ app/
 
 - `_specs/` holds feature specs (one markdown file per feature, following `_specs/template.md`), created via the `/spec` command, which also creates the feature's branch.
 - `_plans/` holds saved implementation plans for specs not yet built.
-- `.claude/commands/` has repo-specific slash commands: `/spec` (spec + branch scaffolding), `/component` (TDD component creation, updating the preview page), `/commit-message` (drafts a commit message from staged changes — always confirm with the user before committing).
+- `.claude/commands/` has repo-specific slash commands: `/spec` (spec + branch scaffolding), `/component` (TDD component creation, updating the preview page), `/commit-message` (drafts a commit message from staged changes — always confirm with the user before committing), `/code-review` (runs the `a11y-reviewer` and `code-quality-reviewer` subagents in parallel on the current branch's diff, merges their reports, and proposes an edit plan — asks for approval before changing anything).
+- `.claude/agents/` has repo-specific subagents: `a11y-reviewer` and `code-quality-reviewer` (diff-scoped reviewers used by `/code-review`, each with its own severity scale), `figma-design-extractor` (pulls a Figma node's design context into a standardized report for implementation, used by `/spec`'s Step 2.1 when a `figma:` link is given).
 
 ## Additional Coding Preferences
 
