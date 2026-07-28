@@ -20,9 +20,10 @@ export default function HeistDetailsPage() {
     return () => clearInterval(interval)
   }, [])
 
+  const isUrgent = !!heist && !heist.finalStatus && isTimeLeftUrgent(heist.deadline, now)
   const timeLeftClass = !heist || heist.finalStatus
     ? "heist-detail-time-left-closed"
-    : isTimeLeftUrgent(heist.deadline, now)
+    : isUrgent
       ? "heist-detail-time-left-urgent"
       : "heist-detail-time-left"
 
@@ -62,7 +63,9 @@ export default function HeistDetailsPage() {
 
             <div className="heist-detail-people">
               <div className="heist-detail-person">
-                <Avatar name={heist.assignedToCodename} />
+                <span aria-hidden="true">
+                  <Avatar name={heist.assignedToCodename} />
+                </span>
                 <div className="heist-detail-person-info">
                   <span className="heist-detail-person-label">Assigned to</span>
                   <span className="heist-detail-person-name">
@@ -71,7 +74,9 @@ export default function HeistDetailsPage() {
                 </div>
               </div>
               <div className="heist-detail-person">
-                <Avatar name={heist.createdByCodename} />
+                <span aria-hidden="true">
+                  <Avatar name={heist.createdByCodename} />
+                </span>
                 <div className="heist-detail-person-info">
                   <span className="heist-detail-person-label">Created by</span>
                   <span className="heist-detail-person-name">
@@ -96,6 +101,7 @@ export default function HeistDetailsPage() {
                 {heist.finalStatus
                   ? "Case closed"
                   : formatTimeLeft(heist.deadline, now)}
+                {isUrgent && <span className="sr-only"> — urgent</span>}
               </span>
             </div>
           </div>
