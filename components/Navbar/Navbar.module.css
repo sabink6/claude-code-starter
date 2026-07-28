@@ -22,7 +22,3 @@
 .logoutBtn:hover {
   @apply bg-lighter opacity-100;
 }
-
-svg.logo {
-  display: inline-block;
-}

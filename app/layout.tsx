@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import "@/app/globals.css"
 
+import Footer from "@/components/Footer"
 import { UserProvider } from "@/lib/firebase/auth-context"
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <UserProvider>{children}</UserProvider>
+        <Footer />
       </body>
     </html>
   )
