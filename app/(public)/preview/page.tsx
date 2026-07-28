@@ -6,6 +6,7 @@ import Link from "next/link"
 
 import Avatar from "@/components/Avatar"
 import Skeleton from "@/components/Skeleton"
+import UserGreeting from "@/components/UserGreeting"
 import { useUser } from "@/lib/firebase/auth-context"
 
 export default function PreviewPage() {
@@ -19,6 +20,8 @@ export default function PreviewPage() {
       <h3>Avatar</h3>
       <Avatar name="bob" />
       <Avatar name="JohnDoe" />
+      <h3>UserGreeting</h3>
+      <UserGreeting codename="QuietVelvetOwl" />
 
       <h3>Route Links</h3>
       <p className="splash-actions">

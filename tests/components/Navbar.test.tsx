@@ -46,6 +46,33 @@ describe("Navbar", () => {
     expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument()
   })
 
+  it("greets the logged-in user by codename", () => {
+    mockedUseUser.mockReturnValue({
+      user: { uid: "abc123", displayName: "QuietVelvetOwl" } as User,
+      loading: false,
+    })
+    render(<Navbar />)
+
+    expect(screen.getByText("Hello, QuietVelvetOwl")).toBeInTheDocument()
+  })
+
+  it("hides the greeting when logged out", () => {
+    mockedUseUser.mockReturnValue({ user: null, loading: false })
+    render(<Navbar />)
+
+    expect(screen.queryByText(/^Hello,/)).not.toBeInTheDocument()
+  })
+
+  it("hides the greeting while auth state is still loading", () => {
+    mockedUseUser.mockReturnValue({
+      user: { uid: "abc123", displayName: "QuietVelvetOwl" } as User,
+      loading: true,
+    })
+    render(<Navbar />)
+
+    expect(screen.queryByText(/^Hello,/)).not.toBeInTheDocument()
+  })
+
   it("hides the logout button when logged out", () => {
     mockedUseUser.mockReturnValue({ user: null, loading: false })
     render(<Navbar />)

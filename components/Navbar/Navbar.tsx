@@ -4,6 +4,7 @@ import { useState } from "react"
 import { LogOut, Plus } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/Logo"
+import UserGreeting from "@/components/UserGreeting"
 import styles from "./Navbar.module.css"
 import { useUser } from "@/lib/firebase/auth-context"
 import { logOut } from "@/lib/firebase/logout"
@@ -32,6 +33,11 @@ export default function Navbar() {
           <div>Small heists. Big chaos.</div>
         </header>
         <ul>
+          {!loading && user?.displayName && (
+            <li>
+              <UserGreeting codename={user.displayName} />
+            </li>
+          )}
           {!loading && user && (
             <li>
               <button
