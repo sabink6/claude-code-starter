@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Clock8, LogOut, Plus } from "lucide-react"
+import { LogOut, Plus } from "lucide-react"
 import Link from "next/link"
+import Logo from "@/components/Logo"
 import styles from "./Navbar.module.css"
 import { useUser } from "@/lib/firebase/auth-context"
 import { logOut } from "@/lib/firebase/logout"
@@ -25,8 +26,7 @@ export default function Navbar() {
         <header>
           <h1>
             <Link href="/heists">
-              P<Clock8 className={styles.logo} size={14} strokeWidth={2.75} />
-              cket Heist
+              <Logo size={14} />
             </Link>
           </h1>
           <div>Small heists. Big chaos.</div>

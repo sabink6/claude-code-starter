@@ -1,5 +1,5 @@
-import { Clock8 } from "lucide-react"
 import Link from "next/link"
+import Logo from "@/components/Logo"
 
 export default function Home() {
   return (
@@ -7,8 +7,7 @@ export default function Home() {
       <div className="page-content splash-hero">
         <span className="splash-tag">Now Recruiting</span>
         <h1 className="splash-title">
-          P<Clock8 className="logo" strokeWidth={2.75} />
-          cket Heist
+          <Logo />
         </h1>
         <p className="splash-lede">Small heists. Big chaos.</p>
         <p>
