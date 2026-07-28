@@ -1,6 +1,6 @@
 # Pocket Heist
 
-Starter project for the Claude Code Masterclass.
+A Next.js and Firebase application built from the Claude Code Masterclass starter project and developed using a spec-first, AI-assisted workflow.
 
 ## Getting Started
 
