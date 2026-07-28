@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
 
+import Footer from "@/components/Footer"
 import Spinner from "@/components/Spinner"
 import { useUser } from "@/lib/firebase/auth-context"
 
@@ -24,12 +25,22 @@ export default function RootLayout({
   }, [isPreview, loading, user, router])
 
   if (isPreview) {
-    return <main className="public">{children}</main>
+    return (
+      <>
+        <main className="public">{children}</main>
+        <Footer />
+      </>
+    )
   }
 
   if (loading || user) {
     return <Spinner />
   }
 
-  return <main className="public">{children}</main>
+  return (
+    <>
+      <main className="public">{children}</main>
+      <Footer />
+    </>
+  )
 }

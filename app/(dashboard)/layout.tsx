@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 
 // components
 import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
 import Spinner from "@/components/Spinner"
 import { useUser } from "@/lib/firebase/auth-context"
 
@@ -30,6 +31,7 @@ export default function HeistsLayout({
     <>
       <Navbar />
       <main>{children}</main>
+      <Footer />
     </>
   )
 }

@@ -1,0 +1,5 @@
+@reference "../../app/globals.css";
+
+.siteFooter {
+  @apply mx-auto max-w-6xl px-2 py-4 text-center text-sm text-body;
+}

@@ -66,6 +66,7 @@ describe("(dashboard) HeistsLayout", () => {
 
     expect(screen.getByText("child content")).toBeInTheDocument()
     expect(screen.getByText("Create New Heist")).toBeInTheDocument()
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument()
     expect(mockReplace).not.toHaveBeenCalled()
   })
 })

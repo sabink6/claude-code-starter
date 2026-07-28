@@ -47,6 +47,7 @@ describe("(public) RootLayout", () => {
     )
 
     expect(screen.getByText("child content")).toBeInTheDocument()
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument()
     expect(mockReplace).not.toHaveBeenCalled()
   })
 
@@ -82,6 +83,7 @@ describe("(public) RootLayout", () => {
     )
 
     expect(screen.getByText("child content")).toBeInTheDocument()
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument()
     expect(mockReplace).not.toHaveBeenCalled()
   })
 })
