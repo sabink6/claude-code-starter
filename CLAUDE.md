@@ -6,28 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Pocket Heist — "Small heists. Big chaos." Starter project for the Claude Code Masterclass.
 
-| | |
-|---|---|
-| Framework | Next.js (App Router) |
-| UI | React 19 |
-| Language | TypeScript |
-| Styling | Tailwind CSS v4 + CSS Modules |
-| Testing | Vitest + Testing Library (jsdom) |
-| Backend | Firebase (Auth + Firestore) |
-
-## Commands
-
-| Command | Purpose |
-|---|---|
-| `npm install` | Install dependencies |
-| `npm run dev` | Start dev server at http://localhost:3000 |
-| `npm run build` | Production build |
-| `npm run start` | Serve production build |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run full Vitest suite |
-| `npx vitest run tests/components/Navbar.test.tsx` | Run a single test file |
-| `npx vitest run -t "renders the main heading"` | Run tests matching a name |
-
 ## Route structure
 
 Route groups split public vs. authenticated areas, each with its own root layout:
