@@ -21,7 +21,7 @@
 
 /* typography */
 body {
- @apply font-sans text-body bg-dark;
+ @apply font-sans text-body bg-dark min-h-dvh flex flex-col;
 }
 h1, h2, h3, h4 {
   @apply text-heading;
@@ -33,13 +33,19 @@ h1, h2, h3, h4 {
     @apply text-4xl md:text-6xl;
   }
 }
+/* body's direct main (rendered by (public)/(dashboard) layouts) grows to
+   fill the space the footer doesn't need, instead of the footer trailing
+   off below a full-viewport-height page and needing a scroll to reach */
+body > main {
+  @apply flex flex-1 flex-col;
+}
 
 /* generic page styles */
 .page-content {
   @apply my-4 mx-auto w-6xl min-w-2xl max-w-full;
 }
 .center-content {
-  @apply flex flex-col justify-center text-justify min-h-lvh;
+  @apply flex flex-1 flex-col justify-center text-justify;
 }
 .form-title {
   @apply text-center text-xl font-bold;
