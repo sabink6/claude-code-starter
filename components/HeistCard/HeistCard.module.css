@@ -38,3 +38,11 @@
 .createdBy {
   @apply font-semibold text-primary;
 }
+
+.timeLeft {
+  @apply flex items-center gap-2 text-sm font-semibold text-secondary;
+}
+
+.timeLeftUrgent {
+  @apply flex items-center gap-2 text-sm font-semibold text-error;
+}
