@@ -1,32 +1,18 @@
-# Claude Code Starter
+# Pocket Heist — Claude Code Starter
 
-![CI](https://github.com/sabink6/claude-code-starter/actions/workflows/ci.yml/badge.svg)
-![CodeQL](https://github.com/sabink6/claude-code-starter/actions/workflows/codeql.yml/badge.svg)
-![License](https://img.shields.io/badge/license-MIT-blue)
+[![CI](https://github.com/sabink6/claude-code-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/sabink6/claude-code-starter/actions)
+[![CodeQL](https://img.shields.io/badge/CodeQL-Enabled-brightgreen)](https://github.com/sabink6/claude-code-starter/security/code-scanning)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Claude Code](https://img.shields.io/badge/Claude-Code-blueviolet)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://claude-code-starter-rho.vercel.app/)
 
-> An AI-first software engineering project exploring agentic development workflows with Claude Code.
+> Exploring AI-assisted software engineering through specification-driven development, context engineering and production-grade workflows.
 
-This repository demonstrates how AI can be integrated into a modern software engineering workflow while maintaining high standards for architecture, testing, security and code quality.
+🔗 **Live Demo:** [Pocket Heist](https://claude-code-starter-rho.vercel.app/)
 
-Rather than using AI solely for code generation, the project focuses on building repeatable engineering processes around AI-assisted development.
-
----
-
-## Getting Started
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+The demo application — **Pocket Heist** (“Small heists. Big chaos.”) — is a working full-stack application built through this process. It provides a realistic environment for applying the workflow end to end, including authentication, Firestore data and security rules, automated testing, CI, security scanning and production deployment.
 
 ---
 
@@ -44,6 +30,28 @@ This project explores:
 
 ---
 
+## Engineering Capabilities
+
+### AI Engineering
+
+- Context engineering (`CLAUDE.md`)
+- Specification-driven development
+- Claude Code workflows
+- AI-assisted implementation
+- Automated AI code review
+- Custom Claude Code commands & subagents
+
+### Software Engineering
+
+- Full-stack Next.js application
+- Firebase Authentication & Firestore
+- Automated testing (Vitest)
+- GitHub Actions CI
+- CodeQL
+- Dependabot
+- Secret scanning
+- Production deployment (Vercel)
+
 ## Development Workflow
 
 Each feature follows a structured workflow:
@@ -56,6 +64,9 @@ Specification (_specs/)
       │
       ▼
 Claude Plan Mode
+      │
+      ▼
+Saved Plan (_plans/)
       │
       ▼
 Architecture Review
@@ -76,7 +87,7 @@ CI / CodeQL / Security Checks
 Merge
 ```
 
-The AI agent accelerates implementation, while engineering decisions, validation and final approval remain human responsibilities.
+> **Engineering principle:** AI accelerates implementation, while architecture, security, validation, code review and final approval remain human responsibilities.
 
 ---
 
@@ -94,6 +105,13 @@ Project-specific knowledge is stored in `CLAUDE.md`, providing the AI with consi
 
 Providing structured context results in more accurate and consistent AI-generated solutions.
 
+`CLAUDE.md` at the repo root is the current, refined version. 
+
+Custom Claude Code tooling lives in `.claude/`:
+
+- `commands/` — repo-specific slash commands (`/spec`, `/component`, `/code-review`, `/commit-message`)
+- `agents/` — subagents used by those commands (`a11y-reviewer`, `code-quality-reviewer`, `figma-design-extractor`)
+
 ---
 
 ### Specification-Driven Development
@@ -104,7 +122,7 @@ Instead of prompting AI to directly generate code, requirements are defined firs
 
 ---
 
-### AI-Assisted Engineering
+### AI-Assisted Development Lifecycle
 
 Claude Code is used to assist with:
 
@@ -120,7 +138,7 @@ All generated code is reviewed and validated before acceptance.
 
 ---
 
-## Engineering Practices
+## Quality & Delivery Pipeline
 
 The repository incorporates modern engineering practices including:
 
@@ -132,31 +150,54 @@ The repository incorporates modern engineering practices including:
 - TypeScript
 - ESLint
 - Vitest
-- Pull Request reviews
+- Pull request-based delivery
 
 These workflows help ensure that AI-assisted development remains reliable, secure and maintainable.
+
+See [`SECURITY.md`](SECURITY.md) for the vulnerability disclosure policy and [`_docs/github-setup.md`](_docs/github-setup.md) for the full GitHub configuration (branch ruleset, Dependabot, CodeQL, secret scanning).
 
 ---
 
 ## Technology Stack
 
-- Next.js
-- TypeScript
-- Firebase
-- Tailwind CSS
-- Claude Code
-- GitHub Actions
-- Vitest
+Framework      Next.js 16
+Language       TypeScript
+Database       Firestore
+Authentication Firebase Auth
+Styling        Tailwind CSS
+Testing        Vitest
+CI/CD          GitHub Actions
+Deployment     Vercel
+AI             Claude Code
 
 ---
 
 ## Repository Structure
 
 ```text
-_specs/              Feature specifications
-.github/workflows/   CI/CD and automation
-CLAUDE.md            AI project context
-src/                 Application source code
+.claude/
+├── commands/          Slash commands (/spec, /component, /code-review, /commit-message)
+├── agents/            Subagents (a11y-reviewer, code-quality-reviewer, figma-design-extractor)
+└── skills/            Repo-specific skills (e.g. firestore-schemas)
+
+.github/workflows/     CI/CD and automation
+
+_docs/                 Project/setup documentation (e.g. GitHub configuration)
+_plans/                Saved implementation plans for specs not yet built
+_specs/                Feature specifications
+
+app/
+├── (public)/          Splash, login, signup, preview — no nav
+└── (dashboard)/       Heists list, create, detail — wrapped in shared Navbar
+
+components/            UI components, one folder per component
+lib/
+├── firebase/          Firebase config, auth context, auth/data actions
+└── ...                Other app logic (codenames, date formatting)
+
+tests/                 Test suite, mirrors the source path
+
+CLAUDE.md              AI project context
 ```
 
 ---
@@ -171,7 +212,7 @@ Key observations include:
 - Persistent project context produces more consistent AI output.
 - Small, incremental changes are easier to review and validate.
 - Automated testing and CI remain essential.
-- AI increases implementation speed but does not replace engineering judgement.
+- AI shifts engineering effort from routine implementation toward problem definition, architecture, context design, validation and review.
 
 ---
 
@@ -180,7 +221,8 @@ Key observations include:
 Areas for continued experimentation include:
 
 - Multi-agent development workflows
-- MCP integrations
-- Automated evaluation pipelines
-- AI-assisted architectural reviews
-- Deployment automation
+- Richer MCP integrations
+- Automated specification validation
+- AI-generated architecture proposals
+- Evaluation of AI coding performance
+- AI-assisted pull request generation
