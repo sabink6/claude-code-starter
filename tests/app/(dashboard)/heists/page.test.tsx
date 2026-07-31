@@ -2,12 +2,24 @@ import { render, screen, within } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 import HeistsPage from "@/app/(dashboard)/heists/page"
+import { useUser } from "@/lib/firebase/auth-context"
 import { useHeists, type HeistFilter } from "@/lib/firebase/heists"
 import type { Heist } from "@/types/firestore"
 
-vi.mock("@/lib/firebase/heists", () => ({ useHeists: vi.fn() }))
+vi.mock("@/lib/firebase/auth-context", () => ({ useUser: vi.fn() }))
+vi.mock("@/lib/firebase/heists", () => ({
+  useHeists: vi.fn(),
+  claimHeistSuccess: vi.fn(),
+  confirmHeistSuccess: vi.fn(),
+  rejectHeistSuccess: vi.fn(),
+  FALLBACK_MESSAGE: "Something went wrong. Please try again.",
+}))
 
-function fakeHeist(id: string, title: string): Heist {
+function fakeHeist(
+  id: string,
+  title: string,
+  overrides: Partial<Heist> = {},
+): Heist {
   return {
     id,
     title,
@@ -17,15 +29,21 @@ function fakeHeist(id: string, title: string): Heist {
     createdByCodename: "SilentCrimsonFox",
     assignedTo: "uid-assignee",
     assignedToCodename: "QuietVelvetOwl",
-    deadline: new Date(),
+    deadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+    successClaimedAt: null,
     finalStatus: null,
+    ...overrides,
   }
 }
 
 const fixtures: Record<HeistFilter, Heist[]> = {
   active: [fakeHeist("active-1", "Steal the crown jewels")],
   assigned: [fakeHeist("assigned-1", "Rob the vault")],
-  expired: [fakeHeist("expired-1", "The one that got away")],
+  expired: [
+    fakeHeist("expired-1", "The one that got away", {
+      deadline: new Date(Date.now() - 60 * 60 * 1000),
+    }),
+  ],
 }
 
 describe("HeistsPage", () => {
@@ -33,6 +51,7 @@ describe("HeistsPage", () => {
     vi.mocked(useHeists).mockImplementation(
       (filter: HeistFilter) => fixtures[filter],
     )
+    vi.mocked(useUser).mockReturnValue({ user: null, loading: false })
   })
 
   it("shows only the active heist titles in the active-heists section", () => {
@@ -132,5 +151,16 @@ describe("HeistsPage", () => {
         name: "The one that got away",
       }),
     ).toHaveAttribute("href", "/heists/expired-1")
+  })
+
+  it("shows a failure badge for an expired heist that was never confirmed", () => {
+    const { container } = render(<HeistsPage />)
+
+    const expiredSection = container.querySelector(
+      ".expired-heists",
+    ) as HTMLElement
+    expect(
+      within(expiredSection).getByText("failure", { selector: "[aria-label]" }),
+    ).toBeInTheDocument()
   })
 })

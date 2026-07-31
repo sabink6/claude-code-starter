@@ -5,10 +5,12 @@ import { Calendar, Clock } from "lucide-react"
 import { useParams } from "next/navigation"
 
 import Avatar from "@/components/Avatar"
+import HeistActions from "@/components/HeistActions"
 import StatusBadge from "@/components/StatusBadge"
 import { useHeist } from "@/lib/firebase/heists"
 import { formatDeadline } from "@/lib/formatDeadline"
 import { formatTimeLeft, isTimeLeftUrgent } from "@/lib/formatTimeLeft"
+import { getHeistDisplayStatus } from "@/lib/heistStatus"
 
 export default function HeistDetailsPage() {
   const { id } = useParams<{ id: string }>()
@@ -20,12 +22,15 @@ export default function HeistDetailsPage() {
     return () => clearInterval(interval)
   }, [])
 
-  const isUrgent = !!heist && !heist.finalStatus && isTimeLeftUrgent(heist.deadline, now)
-  const timeLeftClass = !heist || heist.finalStatus
-    ? "heist-detail-time-left-closed"
-    : isUrgent
-      ? "heist-detail-time-left-urgent"
-      : "heist-detail-time-left"
+  const status = heist ? getHeistDisplayStatus(heist, now) : null
+  const isClosed = status === "success" || status === "failure"
+  const isUrgent = !!heist && !isClosed && isTimeLeftUrgent(heist.deadline, now)
+  const timeLeftClass =
+    !heist || isClosed
+      ? "heist-detail-time-left-closed"
+      : isUrgent
+        ? "heist-detail-time-left-urgent"
+        : "heist-detail-time-left"
 
   return (
     <div className="page-content">
@@ -51,14 +56,14 @@ export default function HeistDetailsPage() {
           <span className="case-tag">Case File</span>
           <div
             className={
-              heist.finalStatus
+              isClosed
                 ? "heist-detail-card heist-detail-card-closed"
                 : "heist-detail-card"
             }
           >
             <div className="heist-detail-header">
               <h2>{heist.title}</h2>
-              {heist.finalStatus && <StatusBadge status={heist.finalStatus} />}
+              {status && status !== "open" && <StatusBadge status={status} />}
             </div>
 
             <div className="heist-detail-people">
@@ -98,12 +103,12 @@ export default function HeistDetailsPage() {
               </span>
               <span className={timeLeftClass}>
                 <Clock aria-hidden="true" size={16} />
-                {heist.finalStatus
-                  ? "Case closed"
-                  : formatTimeLeft(heist.deadline, now)}
+                {isClosed ? "Case closed" : formatTimeLeft(heist.deadline, now)}
                 {isUrgent && <span className="sr-only"> — urgent</span>}
               </span>
             </div>
+
+            <HeistActions heist={heist} />
           </div>
         </div>
       )}

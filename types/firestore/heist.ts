@@ -6,7 +6,9 @@ import type {
   WithFieldValue,
 } from "firebase/firestore"
 
-export type HeistStatus = "success" | "failure"
+// The only outcome any code path ever writes — a missed deadline is a
+// derived, display-only "failure" (see lib/heistStatus.ts), never persisted.
+export type HeistStatus = "success"
 
 // Document — what you read from Firestore (after conversion)
 export interface Heist {
@@ -20,6 +22,8 @@ export interface Heist {
   assignedToCodename: string
   // Fixed at creation time, 48 hours out — never recalculated afterward.
   deadline: Date
+  // Set when the assignee claims the heist succeeded; cleared on rejection.
+  successClaimedAt: Date | null
   finalStatus: HeistStatus | null
 }
 
@@ -33,6 +37,7 @@ export interface CreateHeistInput {
   assignedTo: string
   assignedToCodename: string
   deadline: Date // computed client-side as now + 48h
+  successClaimedAt: null
   finalStatus: null
 }
 
@@ -45,6 +50,7 @@ export interface UpdateHeistInput {
   assignedTo?: string
   assignedToCodename?: string
   deadline?: Date
+  successClaimedAt?: FieldValue | Date | null
   finalStatus?: HeistStatus | null
 }
 
@@ -57,5 +63,6 @@ export const heistConverter: FirestoreDataConverter<Heist> = {
       ...snapshot.data(),
       createdAt: snapshot.data().createdAt?.toDate(),
       deadline: snapshot.data().deadline?.toDate(),
+      successClaimedAt: snapshot.data().successClaimedAt?.toDate() ?? null,
     }) as Heist,
 }

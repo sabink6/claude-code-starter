@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import StatusBadge from "@/components/StatusBadge"
+import { getHeistDisplayStatus } from "@/lib/heistStatus"
 import type { Heist } from "@/types/firestore"
 import styles from "./HeistList.module.css"
 
@@ -19,12 +20,15 @@ export default function HeistList({ title, heists }: HeistListProps) {
         <p className={styles.placeholder}>Nothing here yet.</p>
       ) : (
         <ul className={styles.list}>
-          {heists.map((heist) => (
-            <li key={heist.id} className={styles.item}>
-              <Link href={`/heists/${heist.id}`}>{heist.title}</Link>
-              {heist.finalStatus && <StatusBadge status={heist.finalStatus} />}
-            </li>
-          ))}
+          {heists.map((heist) => {
+            const status = getHeistDisplayStatus(heist)
+            return (
+              <li key={heist.id} className={styles.item}>
+                <Link href={`/heists/${heist.id}`}>{heist.title}</Link>
+                {status !== "open" && <StatusBadge status={status} />}
+              </li>
+            )
+          })}
         </ul>
       )}
     </>

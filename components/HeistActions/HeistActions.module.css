@@ -1,0 +1,8 @@
+@reference "../../app/globals.css";
+
+.actions {
+  @apply mt-2 flex flex-wrap items-center gap-2;
+}
+.error {
+  @apply w-full text-xs text-error;
+}
