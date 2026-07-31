@@ -10,6 +10,7 @@
   --color-lighter: #101828;
   --color-success: #05DF72;
   --color-error: #FF6467;
+  --color-warning: #FDC700;
   --color-heading: white;
   --color-body: #99A1AF;
   --color-cta-start: #9810FA;
@@ -155,6 +156,9 @@ body > main {
 .status-badge-failure {
   @apply bg-error/15 text-error;
 }
+.status-badge-pending {
+  @apply bg-warning/15 text-warning;
+}
 
 /* heist detail page */
 .heist-detail {
@@ -230,5 +234,18 @@ body > main {
 }
 .btn:disabled,
 .btn[aria-disabled="true"] {
+  @apply opacity-50 cursor-not-allowed;
+}
+.btn-reject {
+  @apply inline-flex items-center justify-center gap-2 rounded-btn border border-error bg-transparent px-4 py-2 font-semibold text-error transition-colors;
+}
+.btn-reject:hover {
+  @apply bg-error/10;
+}
+.btn-reject:focus-visible {
+  @apply outline-2 outline-offset-2 outline-error;
+}
+.btn-reject:disabled,
+.btn-reject[aria-disabled="true"] {
   @apply opacity-50 cursor-not-allowed;
 }

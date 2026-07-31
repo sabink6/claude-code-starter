@@ -1,7 +1,16 @@
 import { render, screen } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { beforeEach, describe, it, expect, vi } from "vitest"
+
+vi.mock("@/lib/firebase/auth-context", () => ({ useUser: vi.fn() }))
+vi.mock("@/lib/firebase/heists", () => ({
+  claimHeistSuccess: vi.fn(),
+  confirmHeistSuccess: vi.fn(),
+  rejectHeistSuccess: vi.fn(),
+  FALLBACK_MESSAGE: "Something went wrong. Please try again.",
+}))
 
 import HeistCardGrid from "@/components/HeistCardGrid"
+import { useUser } from "@/lib/firebase/auth-context"
 import type { Heist } from "@/types/firestore"
 
 function fakeHeist(id: string, title: string): Heist {
@@ -14,12 +23,17 @@ function fakeHeist(id: string, title: string): Heist {
     createdByCodename: "SilentCrimsonFox",
     assignedTo: "uid-assignee",
     assignedToCodename: "QuietVelvetOwl",
-    deadline: new Date(),
+    deadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+    successClaimedAt: null,
     finalStatus: null,
   }
 }
 
 describe("HeistCardGrid", () => {
+  beforeEach(() => {
+    vi.mocked(useUser).mockReturnValue({ user: null, loading: false })
+  })
+
   it("renders the title as a heading", () => {
     render(<HeistCardGrid title="Your Active Heists" heists={[]} />)
 

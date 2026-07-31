@@ -7,7 +7,9 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where,
+  type DocumentData,
 } from "firebase/firestore"
 
 import { useUser } from "@/lib/firebase/auth-context"
@@ -17,6 +19,7 @@ import {
   heistConverter,
   type CreateHeistInput,
   type Heist,
+  type UpdateHeistInput,
 } from "@/types/firestore"
 
 export const FALLBACK_MESSAGE = "Something went wrong. Please try again."
@@ -25,7 +28,7 @@ const DEADLINE_HOURS = 48
 
 export type NewHeistInput = Omit<
   CreateHeistInput,
-  "createdAt" | "deadline" | "finalStatus"
+  "createdAt" | "deadline" | "successClaimedAt" | "finalStatus"
 >
 
 export async function createHeist(input: NewHeistInput): Promise<void> {
@@ -36,11 +39,32 @@ export async function createHeist(input: NewHeistInput): Promise<void> {
       ...input,
       createdAt: serverTimestamp(),
       deadline,
+      successClaimedAt: null,
       finalStatus: null,
     })
   } catch {
     throw new Error(FALLBACK_MESSAGE)
   }
+}
+
+async function updateHeist(id: string, patch: UpdateHeistInput): Promise<void> {
+  try {
+    await updateDoc(doc(db, COLLECTIONS.HEISTS, id), patch as DocumentData)
+  } catch {
+    throw new Error(FALLBACK_MESSAGE)
+  }
+}
+
+export function claimHeistSuccess(id: string): Promise<void> {
+  return updateHeist(id, { successClaimedAt: serverTimestamp() })
+}
+
+export function confirmHeistSuccess(id: string): Promise<void> {
+  return updateHeist(id, { finalStatus: "success" })
+}
+
+export function rejectHeistSuccess(id: string): Promise<void> {
+  return updateHeist(id, { successClaimedAt: null, finalStatus: null })
 }
 
 export type HeistFilter = "active" | "assigned" | "expired"
@@ -66,7 +90,6 @@ export function useHeists(filter: HeistFilter): Heist[] | null {
         ? query(
             ref,
             where("assignedTo", "==", user.uid),
-            where("finalStatus", "==", null),
             where("deadline", ">", now),
             orderBy("deadline", "asc"),
           )
@@ -74,13 +97,11 @@ export function useHeists(filter: HeistFilter): Heist[] | null {
           ? query(
               ref,
               where("createdBy", "==", user.uid),
-              where("finalStatus", "==", null),
               where("deadline", ">", now),
               orderBy("deadline", "asc"),
             )
           : query(
               ref,
-              where("finalStatus", "in", ["success", "failure"]),
               where("deadline", "<=", now),
               orderBy("deadline", "desc"),
             )

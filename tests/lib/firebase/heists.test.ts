@@ -6,6 +6,7 @@ vi.mock("@/lib/firebase/config", () => ({ auth: {}, db: {} }))
 vi.mock("@/lib/firebase/auth-context", () => ({ useUser: vi.fn() }))
 vi.mock("firebase/firestore", () => ({
   addDoc: vi.fn(),
+  updateDoc: vi.fn(),
   collection: vi.fn((_db, path) => ({
     type: "collection",
     path,
@@ -34,13 +35,17 @@ import {
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore"
 
 import { useUser } from "@/lib/firebase/auth-context"
 import {
   FALLBACK_MESSAGE,
+  claimHeistSuccess,
+  confirmHeistSuccess,
   createHeist,
+  rejectHeistSuccess,
   useHeist,
   useHeists,
 } from "@/lib/firebase/heists"
@@ -110,10 +115,60 @@ describe("createHeist", () => {
     expect(payload.finalStatus).toBeNull()
   })
 
+  it("always writes successClaimedAt as null", async () => {
+    await createHeist(baseInput)
+
+    const payload = vi.mocked(addDoc).mock.calls[0][1] as Record<
+      string,
+      unknown
+    >
+    expect(payload.successClaimedAt).toBeNull()
+  })
+
   it("throws the fallback message when addDoc rejects", async () => {
     vi.mocked(addDoc).mockRejectedValueOnce(new Error("permission-denied"))
 
     await expect(createHeist(baseInput)).rejects.toThrow(FALLBACK_MESSAGE)
+  })
+})
+
+describe.each([
+  {
+    name: "claimHeistSuccess",
+    fn: claimHeistSuccess,
+    expectedPayload: { successClaimedAt: { type: "serverTimestamp" } },
+  },
+  {
+    name: "confirmHeistSuccess",
+    fn: confirmHeistSuccess,
+    expectedPayload: { finalStatus: "success" },
+  },
+  {
+    name: "rejectHeistSuccess",
+    fn: rejectHeistSuccess,
+    expectedPayload: { successClaimedAt: null, finalStatus: null },
+  },
+])("$name", ({ fn, expectedPayload }) => {
+  beforeEach(() => {
+    vi.mocked(updateDoc)
+      .mockReset()
+      .mockResolvedValue(undefined as never)
+  })
+
+  it("updates the heist doc with the expected payload", async () => {
+    await fn("heist-1")
+
+    const call = vi.mocked(updateDoc).mock.calls[0]
+    expect(call[0]).toEqual(
+      expect.objectContaining({ type: "doc", path: "heists", id: "heist-1" }),
+    )
+    expect(call[1]).toEqual(expectedPayload)
+  })
+
+  it("throws the fallback message when updateDoc rejects", async () => {
+    vi.mocked(updateDoc).mockRejectedValueOnce(new Error("permission-denied"))
+
+    await expect(fn("heist-1")).rejects.toThrow(FALLBACK_MESSAGE)
   })
 })
 
@@ -146,12 +201,16 @@ describe("useHeists", () => {
     unsubscribeSpy.mockReset()
   })
 
-  it("builds an 'active' query filtered to assignedTo, non-null-excluded, and an unexpired deadline", () => {
+  it("builds an 'active' query filtered to assignedTo and an unexpired deadline", () => {
     renderHook(() => useHeists("active"))
 
     expect(where).toHaveBeenCalledWith("assignedTo", "==", "uid-current")
-    expect(where).toHaveBeenCalledWith("finalStatus", "==", null)
     expect(where).toHaveBeenCalledWith("deadline", ">", expect.any(Date))
+    expect(where).not.toHaveBeenCalledWith(
+      "finalStatus",
+      expect.anything(),
+      expect.anything(),
+    )
     expect(orderBy).toHaveBeenCalledWith("deadline", "asc")
   })
 
@@ -159,19 +218,24 @@ describe("useHeists", () => {
     renderHook(() => useHeists("assigned"))
 
     expect(where).toHaveBeenCalledWith("createdBy", "==", "uid-current")
-    expect(where).toHaveBeenCalledWith("finalStatus", "==", null)
     expect(where).toHaveBeenCalledWith("deadline", ">", expect.any(Date))
+    expect(where).not.toHaveBeenCalledWith(
+      "finalStatus",
+      expect.anything(),
+      expect.anything(),
+    )
   })
 
-  it("builds an 'expired' query with no user-based filter", () => {
+  it("builds an 'expired' query on the deadline alone, with no status or user filter", () => {
     renderHook(() => useHeists("expired"))
 
-    expect(where).toHaveBeenCalledWith("finalStatus", "in", [
-      "success",
-      "failure",
-    ])
     expect(where).toHaveBeenCalledWith("deadline", "<=", expect.any(Date))
     expect(orderBy).toHaveBeenCalledWith("deadline", "desc")
+    expect(where).not.toHaveBeenCalledWith(
+      "finalStatus",
+      expect.anything(),
+      expect.anything(),
+    )
     expect(where).not.toHaveBeenCalledWith(
       "assignedTo",
       expect.anything(),

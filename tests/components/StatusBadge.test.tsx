@@ -18,4 +18,13 @@ describe("StatusBadge", () => {
       "Outcome: failure",
     )
   })
+
+  it("renders a distinct label and accessible name for a pending claim", () => {
+    render(<StatusBadge status="pending" />)
+
+    expect(screen.getByText("pending confirmation")).toHaveAttribute(
+      "aria-label",
+      "Status: pending confirmation",
+    )
+  })
 })

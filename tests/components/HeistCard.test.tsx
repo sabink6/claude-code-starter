@@ -1,7 +1,17 @@
 import { render, screen } from "@testing-library/react"
-import { afterEach, describe, it, expect, vi } from "vitest"
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
+import type { User } from "firebase/auth"
+
+vi.mock("@/lib/firebase/auth-context", () => ({ useUser: vi.fn() }))
+vi.mock("@/lib/firebase/heists", () => ({
+  claimHeistSuccess: vi.fn(),
+  confirmHeistSuccess: vi.fn(),
+  rejectHeistSuccess: vi.fn(),
+  FALLBACK_MESSAGE: "Something went wrong. Please try again.",
+}))
 
 import HeistCard from "@/components/HeistCard"
+import { useUser } from "@/lib/firebase/auth-context"
 import type { Heist } from "@/types/firestore"
 
 function fakeHeist(overrides: Partial<Heist> = {}): Heist {
@@ -14,7 +24,8 @@ function fakeHeist(overrides: Partial<Heist> = {}): Heist {
     createdByCodename: "SilentCrimsonFox",
     assignedTo: "uid-assignee",
     assignedToCodename: "QuietVelvetOwl",
-    deadline: new Date("2026-01-03T15:00:00.000Z"),
+    deadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+    successClaimedAt: null,
     finalStatus: null,
     ...overrides,
   }
@@ -23,6 +34,10 @@ function fakeHeist(overrides: Partial<Heist> = {}): Heist {
 describe("HeistCard", () => {
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  beforeEach(() => {
+    vi.mocked(useUser).mockReturnValue({ user: null, loading: false })
   })
 
   it("renders the heist title, assigned-to codename, and created-by codename", () => {
@@ -81,5 +96,51 @@ describe("HeistCard", () => {
     expect(screen.getByText("1h 30m left").parentElement?.className).toMatch(
       /timeLeftUrgent/,
     )
+  })
+
+  it("shows no status badge for an open heist", () => {
+    render(<HeistCard heist={fakeHeist()} />)
+
+    expect(screen.queryByText("pending confirmation")).not.toBeInTheDocument()
+    expect(screen.queryByText("success")).not.toBeInTheDocument()
+    expect(screen.queryByText("failure")).not.toBeInTheDocument()
+  })
+
+  it("shows a 'Mark as Success' action to the heist's assignee", () => {
+    vi.mocked(useUser).mockReturnValue({
+      user: { uid: "uid-assignee" } as User,
+      loading: false,
+    })
+
+    render(<HeistCard heist={fakeHeist()} />)
+
+    expect(
+      screen.getByRole("button", {
+        name: 'Mark "Steal the crown jewels" as success',
+      }),
+    ).toBeInTheDocument()
+  })
+
+  it("shows no action to a viewer who is neither the assignee nor the creator", () => {
+    vi.mocked(useUser).mockReturnValue({
+      user: { uid: "uid-bystander" } as User,
+      loading: false,
+    })
+
+    render(<HeistCard heist={fakeHeist()} />)
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument()
+  })
+
+  it("shows a failure badge for a heist that expired without a confirmed success", () => {
+    render(
+      <HeistCard
+        heist={fakeHeist({ deadline: new Date(Date.now() - 1000) })}
+      />,
+    )
+
+    expect(
+      screen.getByText("failure", { selector: "[aria-label]" }),
+    ).toBeInTheDocument()
   })
 })

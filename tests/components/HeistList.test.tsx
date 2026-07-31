@@ -4,7 +4,11 @@ import { describe, it, expect } from "vitest"
 import HeistList from "@/components/HeistList"
 import type { Heist } from "@/types/firestore"
 
-function fakeHeist(id: string, title: string): Heist {
+function fakeHeist(
+  id: string,
+  title: string,
+  overrides: Partial<Heist> = {},
+): Heist {
   return {
     id,
     title,
@@ -14,8 +18,10 @@ function fakeHeist(id: string, title: string): Heist {
     createdByCodename: "SilentCrimsonFox",
     assignedTo: "uid-assignee",
     assignedToCodename: "QuietVelvetOwl",
-    deadline: new Date(),
+    deadline: new Date(Date.now() - 1000),
+    successClaimedAt: null,
     finalStatus: null,
+    ...overrides,
   }
 }
 
@@ -60,5 +66,27 @@ describe("HeistList", () => {
     expect(
       screen.getByRole("link", { name: "Steal the crown jewels" }),
     ).toHaveAttribute("href", "/heists/heist-42")
+  })
+
+  it("shows a failure badge for an expired heist that was never confirmed", () => {
+    const heists = [
+      fakeHeist("heist-1", "The one that got away", { finalStatus: null }),
+    ]
+    render(<HeistList title="History" heists={heists} />)
+
+    expect(
+      screen.getByText("failure", { selector: "[aria-label]" }),
+    ).toBeInTheDocument()
+  })
+
+  it("shows a success badge for an expired heist that was confirmed", () => {
+    const heists = [
+      fakeHeist("heist-1", "Clean getaway", { finalStatus: "success" }),
+    ]
+    render(<HeistList title="History" heists={heists} />)
+
+    expect(
+      screen.getByText("success", { selector: "[aria-label]" }),
+    ).toBeInTheDocument()
   })
 })
