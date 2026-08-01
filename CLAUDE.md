@@ -61,6 +61,10 @@ app/
   - Globals (`describe`/`it`/`expect`) are enabled — no explicit imports needed.
   - `jest-dom` matchers are loaded globally via `vitest.setup.ts`.
 
+## Responsive Web Requirements
+
+Before implementing UI, read `_docs/responsive-design.md` and follow its conventions. It covers breakpoints, container sizing, overflow guards, touch targets, and the app's navigation pattern — most horizontal-overflow bugs on phones trace back to one of the failure patterns documented there.
+
 ## CI and branch protection
 
 - `main` is protected: direct pushes are rejected — all changes land via a pull request, and the `ci` status check (`.github/workflows/ci.yml`: install, lint, test, build) must pass before merging. Always work on a feature branch.

@@ -9,5 +9,9 @@
 }
 
 .item {
-  @apply flex items-center justify-between gap-2 py-2 text-sm;
+  @apply flex flex-wrap items-center justify-between gap-2 py-2 text-sm;
+}
+
+.itemTitle {
+  @apply min-w-0 break-words;
 }

@@ -30,7 +30,7 @@ export default function Navbar() {
               <Logo size={14} />
             </Link>
           </h1>
-          <div>Small heists. Big chaos.</div>
+          <div className={styles.tagline}>Small heists. Big chaos.</div>
         </header>
         <ul>
           {!loading && user?.displayName && (

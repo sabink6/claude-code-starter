@@ -9,6 +9,10 @@ The user has provided information about the component to make: **$ARGUMENTS**
 
 ## Do thus first:
 
+### Responsive Web Requirements
+
+Before implementing UI, read `_docs/responsive-design.md` and follow its conventions.
+
 **Check for an image reference first.** If `$ARGUMENTS` contains a path ending in `.png`, `.jpg`, `.jpeg`, `.webp`, or `.svg` (typically under `public/`):
 - Use the Read tool on that image path to view it — Read renders images visually, so look at it directly rather than guessing from the filename.
 - Treat the image as the primary design reference for layout, spacing, colors, and typography. Any remaining text in `$ARGUMENTS` after the path is a naming hint / extra requirements, not a substitute for what's visible in the image.

@@ -24,7 +24,9 @@ export default function HeistList({ title, heists }: HeistListProps) {
             const status = getHeistDisplayStatus(heist)
             return (
               <li key={heist.id} className={styles.item}>
-                <Link href={`/heists/${heist.id}`}>{heist.title}</Link>
+                <Link href={`/heists/${heist.id}`} className={styles.itemTitle}>
+                  {heist.title}
+                </Link>
                 {status !== "open" && <StatusBadge status={status} />}
               </li>
             )
