@@ -126,4 +126,46 @@ describe("Navbar", () => {
     resolveLogOut()
     await waitFor(() => expect(button).not.toBeDisabled())
   })
+
+  describe("item inventory", () => {
+    it("renders the brand, tagline, and Create New Heist link when signed out", () => {
+      mockedUseUser.mockReturnValue({ user: null, loading: false })
+      render(<Navbar />)
+
+      expect(
+        screen.getByRole("heading", { level: 1, name: /pcket heist/i }),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole("link", { name: /pcket heist/i }),
+      ).toHaveAttribute("href", "/heists")
+      expect(screen.getByText("Small heists. Big chaos.")).toBeInTheDocument()
+      expect(
+        screen.getByRole("link", { name: /create new heist/i }),
+      ).toHaveAttribute("href", "/heists/create")
+      expect(screen.queryByText(/^Hello,/)).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", { name: /logout/i }),
+      ).not.toBeInTheDocument()
+    })
+
+    it("renders every item, including the greeting and logout, when signed in", () => {
+      mockedUseUser.mockReturnValue({
+        user: { uid: "abc123", displayName: "QuietVelvetOwl" } as User,
+        loading: false,
+      })
+      render(<Navbar />)
+
+      expect(
+        screen.getByRole("heading", { level: 1, name: /pcket heist/i }),
+      ).toBeInTheDocument()
+      expect(screen.getByText("Small heists. Big chaos.")).toBeInTheDocument()
+      expect(screen.getByText("Hello, QuietVelvetOwl")).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: /logout/i }),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole("link", { name: /create new heist/i }),
+      ).toHaveAttribute("href", "/heists/create")
+    })
+  })
 })

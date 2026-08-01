@@ -1,19 +1,27 @@
 @reference "../../app/globals.css";
 
 .siteNav {
-  @apply bg-light px-2 py-4;
+  @apply bg-light px-4 py-4 sm:px-6;
 }
 
 .siteNav nav {
-  @apply mx-auto max-w-6xl flex justify-between items-center;
+  @apply mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-3 md:justify-between;
+}
+
+.siteNav header {
+  @apply flex flex-col items-center text-center md:items-start md:text-left;
 }
 
 .siteNav h1 {
-  @apply font-bold text-xl;
+  @apply text-xl font-bold;
+}
+
+.tagline {
+  @apply text-xs text-body md:text-sm;
 }
 
 .siteNav ul {
-  @apply flex items-center gap-3;
+  @apply flex flex-wrap items-center justify-center gap-2 sm:gap-3;
 }
 
 .logoutBtn {

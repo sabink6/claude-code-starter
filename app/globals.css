@@ -36,23 +36,25 @@ h1, h2, h3, h4 {
 }
 /* body's direct main (rendered by (public)/(dashboard) layouts) grows to
    fill the space the footer doesn't need, instead of the footer trailing
-   off below a full-viewport-height page and needing a scroll to reach */
+   off below a full-viewport-height page and needing a scroll to reach.
+   This is also the app's single horizontal gutter source — page wrappers
+   size themselves with max-w-* only, never their own padding. */
 body > main {
-  @apply flex flex-1 flex-col;
+  @apply flex flex-1 flex-col px-4 sm:px-6;
 }
 
 /* generic page styles */
 .page-content {
-  @apply my-4 mx-auto w-6xl min-w-2xl max-w-full;
+  @apply mx-auto my-4 w-full max-w-6xl;
 }
 .center-content {
-  @apply flex flex-1 flex-col justify-center text-justify;
+  @apply flex flex-1 flex-col justify-center text-left md:text-justify;
 }
 .form-title {
   @apply text-center text-xl font-bold;
 }
 .splash-actions {
-  @apply flex gap-3;
+  @apply flex flex-wrap gap-3;
 }
 
 /* splash page — "case file" briefing treatment */
@@ -89,7 +91,7 @@ body > main {
 @keyframes splash-stamp {
   from {
     opacity: 0;
-    transform: rotate(-2deg) scale(1.5);
+    transform: rotate(-2deg) scale(1.2);
   }
   to {
     opacity: 1;
@@ -128,7 +130,7 @@ body > main {
   @apply grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3;
 }
 .heist-panel {
-  @apply rounded-btn border border-lighter bg-light p-4;
+  @apply rounded-btn border border-lighter bg-light p-3 sm:p-4;
   border-left-width: 3px;
 
   h2 {
@@ -148,7 +150,7 @@ body > main {
   border-left-color: var(--color-body);
 }
 .status-badge {
-  @apply rounded-btn px-2 py-0.5 text-xs font-semibold uppercase;
+  @apply shrink-0 rounded-btn px-2 py-0.5 text-xs font-semibold whitespace-nowrap uppercase;
 }
 .status-badge-success {
   @apply bg-success/15 text-success;
@@ -177,7 +179,7 @@ body > main {
   @apply flex flex-wrap items-start justify-between gap-3;
 
   h2 {
-    @apply text-2xl;
+    @apply min-w-0 text-xl break-words md:text-2xl;
     font-family: var(--font-display);
   }
 }
@@ -188,13 +190,13 @@ body > main {
   @apply flex items-center gap-3 rounded-btn border border-lighter bg-lighter p-3;
 }
 .heist-detail-person-info {
-  @apply flex flex-col;
+  @apply flex min-w-0 flex-col;
 }
 .heist-detail-person-label {
   @apply text-xs font-semibold tracking-widest text-body uppercase;
 }
 .heist-detail-person-name {
-  @apply font-semibold text-heading;
+  @apply font-semibold break-words text-heading;
 }
 .heist-detail-section {
   @apply mt-4;
@@ -203,13 +205,17 @@ body > main {
   @apply mb-2 text-xs font-semibold tracking-widest text-body uppercase;
 }
 .heist-detail-description {
-  @apply text-body whitespace-pre-line;
+  @apply text-body whitespace-pre-line break-words;
 }
 .heist-detail-timeline {
   @apply mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-lighter pt-4 text-sm text-body;
 
   span {
-    @apply flex items-center gap-2;
+    @apply flex min-w-0 items-center gap-2;
+  }
+
+  svg {
+    @apply shrink-0;
   }
 }
 .heist-detail-time-left {
@@ -224,7 +230,7 @@ body > main {
 
 /* buttons */
 .btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-btn bg-linear-to-r from-cta-start to-cta-end px-4 py-2 font-semibold text-heading transition-opacity;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-btn bg-linear-to-r from-cta-start to-cta-end px-4 py-2 font-semibold text-heading transition-opacity md:min-h-0;
 }
 .btn:hover {
   @apply opacity-90;
@@ -237,7 +243,7 @@ body > main {
   @apply opacity-50 cursor-not-allowed;
 }
 .btn-reject {
-  @apply inline-flex items-center justify-center gap-2 rounded-btn border border-error bg-transparent px-4 py-2 font-semibold text-error transition-colors;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-btn border border-error bg-transparent px-4 py-2 font-semibold text-error transition-colors md:min-h-0;
 }
 .btn-reject:hover {
   @apply bg-error/10;

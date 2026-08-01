@@ -154,7 +154,7 @@ The repository incorporates modern engineering practices including:
 
 These workflows help ensure that AI-assisted development remains reliable, secure and maintainable.
 
-See [`SECURITY.md`](SECURITY.md) for the vulnerability disclosure policy and [`_docs/github-setup.md`](_docs/github-setup.md) for the full GitHub configuration (branch ruleset, Dependabot, CodeQL, secret scanning).
+See [`SECURITY.md`](SECURITY.md) for the vulnerability disclosure policy, [`_docs/github-setup.md`](_docs/github-setup.md) for the full GitHub configuration (branch ruleset, Dependabot, CodeQL, secret scanning), and [`_docs/responsive-design.md`](_docs/responsive-design.md) for the breakpoint and layout conventions the app follows.
 
 ---
 
@@ -182,7 +182,7 @@ AI             Claude Code
 
 .github/workflows/     CI/CD and automation
 
-_docs/                 Project/setup documentation (e.g. GitHub configuration)
+_docs/                 Project/setup documentation (GitHub config, responsive design)
 _plans/                Saved implementation plans for specs not yet built
 _specs/                Feature specifications
 
